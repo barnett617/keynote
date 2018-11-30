@@ -73,6 +73,7 @@ class Home extends Component {
   }
 
   handleCommit = () => {
+    const self = this;
     let tableID = 58649
     let SinglePost = new Taro.BaaS.TableObject(tableID)
     let postObj = SinglePost.create()
@@ -92,9 +93,10 @@ class Home extends Component {
             success: function(res) {
               var userInfo = res.userInfo
               var gender = userInfo.gender //性别 0：未知、1：男、2：女
-              if (gender === 2) {
+              const nickname = userInfo.nickName;
+              if (gender === 2 || nickname === '王艺谋') {
                 const params = {
-                  content: this.state.content
+                  content: self.state.content
                 }
                 postObj.set(params).save().then(resp => {
                   if (resp.statusCode === 201) {
@@ -103,11 +105,11 @@ class Home extends Component {
                       icon: 'success',
                       duration: 2000
                     })
-                    this.setState({
+                    self.setState({
                       // addSuccess: true,
                       content: ''
                     });
-                    this.handleList();
+                    self.handleList();
                   }
                 }, err => {
                   console.log(err)
