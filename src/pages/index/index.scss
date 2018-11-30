@@ -3,4 +3,9 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  background-color: aliceblue;
+  &-btn {
+    // height: 40px;
+    border-radius: 10px;
+  }
 }
