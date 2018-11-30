@@ -39,21 +39,22 @@
     &-content {
       margin-left:15px;
       padding-left:15px;
+      box-sizing: border-box;
       border:1px solid lavender;
       border-radius:15px;
       background:white;
       height: 120px;
     }
+    &-view {
+      box-sizing: border-box;
+      padding: 25px;
+      width: 100%;
+      height: 100%;
+      // background-color: lavenderblush;
+    }
     &-icon {
-      border:1px solid lavender;
-      background-color: lavenderblush;
+      // border:1px solid lavender;
       border-radius:50%;
-      &-part {
-        flex-grow: 1;
-        width: 50px;
-        height: 50px;
-        text-align: center;
-      }
     }
   }
 }

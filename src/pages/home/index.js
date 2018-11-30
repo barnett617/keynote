@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Input, ScrollView, Text, Icon, Textarea } from '@tarojs/components'
+import { View, Input, ScrollView, Text, Icon, Textarea, Button } from '@tarojs/components'
 // import { AtToast, AtLoadMore } from "taro-ui"
 
 import './index.scss'
@@ -18,6 +18,9 @@ class Home extends Component {
       scrollViewHeight: 100,
       scrollTop: 0,
       cursorSpacing: 0,
+      canCommit: false,
+      btnLoading: false,
+      btnText: 'Go'
     }
   }
 
@@ -69,16 +72,6 @@ class Home extends Component {
 
   handleCommit = () => {
     const self = this;
-    let canCommit;
-    if (canCommit !== undefined && !canCommit) {
-      Taro.showToast({
-        title: '要等上一条消息发送完才能发送下一条哦',
-        icon: 'none',
-        duration: 2000
-      })
-      return
-    }
-    canCommit = false 
     if (!this.state.content) {
       Taro.showToast({
         title: '要输入内容才能发送哦',
@@ -87,6 +80,11 @@ class Home extends Component {
       })
       return
     }
+    self.setState({
+      canCommit: false,
+      btnText: '',
+      btnLoading: true
+    });
     Taro.getSetting({
       success: function(res){
         if (res.authSetting['scope.userInfo']) {
@@ -105,7 +103,11 @@ class Home extends Component {
                 let postObj = SinglePost.create()
                 postObj.set(params).save().then(resp => {
                   if (resp) {
-                    canCommit = true
+                    self.setState({
+                      canCommit: true,
+                      btnText: 'Go',
+                      btnLoading: false
+                    });
                   }
                   if (resp.statusCode === 201) {
                     Taro.showToast({
@@ -119,10 +121,19 @@ class Home extends Component {
                     self.handleList();
                   }
                 }, err => {
-                  canCommit = true
+                  self.setState({
+                    canCommit: true,
+                    btnText: 'Go',
+                    btnLoading: false
+                  });
                   console.log(err)
                 })
               } else {
+                self.setState({
+                  canCommit: true,
+                  btnText: 'Go',
+                  btnLoading: false
+                });
                 Taro.showToast({
                   title: '你不是星星不能发送哦',
                   icon: 'none',
@@ -138,9 +149,12 @@ class Home extends Component {
   }
 
   handelChange = (e) => {
-    this.setState({
-      content: e.target.value
-    });
+    if (e.target.value) {
+      this.setState({
+        content: e.target.value,
+        canCommit: true
+      });
+    }
   }
 
   handleClickMore = (e) => {
@@ -210,8 +224,18 @@ class Home extends Component {
               auto-Height='true'
             />
           </View>
-          <View onClick={this.handleCommit} className='home-input-icon-part'>
-            <Icon className='home-input-icon' type='success' color='lavenderblush' />
+          <View className='home-input-view'>
+            <Button
+              onClick={this.handleCommit}
+              className='home-input-icon-part'
+              size='default'
+              type='primary'
+              plain='true'
+              loading={this.state.btnLoading ? true : false}
+              disabled={!this.state.canCommit ? true : false}
+            >
+                {this.state.btnText}
+            </Button>
           </View>
         </View>
       </View>
