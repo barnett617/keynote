@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Input, ScrollView, Text, Icon } from '@tarojs/components'
-import { AtToast, AtLoadMore } from "taro-ui"
+import { View, Input, ScrollView, Text, Icon, Textarea } from '@tarojs/components'
+// import { AtToast, AtLoadMore } from "taro-ui"
 
 import './index.scss'
 
@@ -15,10 +15,9 @@ class Home extends Component {
     this.state = {
       posts: [],
       content: '',
-      addSuccess: false,
-      status: 'loading',
       scrollViewHeight: 100,
-      scrollTop: 0
+      scrollTop: 0,
+      cursorSpacing: 0,
     }
   }
 
@@ -38,34 +37,30 @@ class Home extends Component {
 
   handleList = () => {
     const self = this;
-    var query = Taro.createSelectorQuery()
-    let inputHeight;
-    query.select('#home-input')
-    query.exec(function(res){
-      inputHeight = res[0].height       // #the-id节点的上边界坐标
-    })
+    // var query = Taro.createSelectorQuery()
+    // let inputHeight;
+    // query.select('#home-input')
+    // query.exec(function(res){
+    //   inputHeight = res[0].height       // #the-id节点的上边界坐标
+    // })
     Taro.getSystemInfo({
       success (res) {
         console.log(res.windowHeight)
         self.setState({
-          scrollViewHeight: res.windowHeight - 50
+          scrollViewHeight: res.windowHeight - 100
         })
       }
     });
     let tableID = 58649
     let TableObj = new Taro.BaaS.TableObject(tableID)
-    // this.setState({
-    //   status: 'loading'
-    // });
-    TableObj.find().then(res => {
+    var query = new Taro.BaaS.Query()
+    TableObj.setQuery(query).limit(1000).find().then(res => {
       if (res.statusCode === 200) {
         this.setState({
           posts: res.data.objects,
-          status: 'noMore',
           scrollTop: 1000 * (res.data.objects.length)
         });
       }
-      // success
     }, err => {
       // err
       console.log(err)
@@ -74,31 +69,44 @@ class Home extends Component {
 
   handleCommit = () => {
     const self = this;
-    let tableID = 58649
-    let SinglePost = new Taro.BaaS.TableObject(tableID)
-    let postObj = SinglePost.create()
+    let canCommit;
+    if (canCommit !== undefined && !canCommit) {
+      Taro.showToast({
+        title: '要等上一条消息发送完才能发送下一条哦',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    canCommit = false 
     if (!this.state.content) {
       Taro.showToast({
         title: '要输入内容才能发送哦',
         icon: 'none',
         duration: 2000
       })
-      return;
+      return
     }
     Taro.getSetting({
       success: function(res){
         if (res.authSetting['scope.userInfo']) {
           // 已经授权，可以直接调用 getUserInfo 获取头像昵称
           Taro.getUserInfo({
-            success: function(res) {
-              var userInfo = res.userInfo
+            success: function(userRes) {
+              var userInfo = userRes.userInfo
               var gender = userInfo.gender //性别 0：未知、1：男、2：女
               const nickname = userInfo.nickName;
               if (gender === 2 || nickname === '王艺谋') {
                 const params = {
                   content: self.state.content
                 }
+                let tableID = 58649
+                let SinglePost = new Taro.BaaS.TableObject(tableID)
+                let postObj = SinglePost.create()
                 postObj.set(params).save().then(resp => {
+                  if (resp) {
+                    canCommit = true
+                  }
                   if (resp.statusCode === 201) {
                     Taro.showToast({
                       title: '发送成功',
@@ -106,12 +114,12 @@ class Home extends Component {
                       duration: 2000
                     })
                     self.setState({
-                      // addSuccess: true,
                       content: ''
                     });
                     self.handleList();
                   }
                 }, err => {
+                  canCommit = true
                   console.log(err)
                 })
               } else {
@@ -139,11 +147,22 @@ class Home extends Component {
     console.log('click handle more: ' + e);
   }
 
-  onScrolltoupper = () => {
-
+  onScrolltoupper = (e) => {
+    console.log('滚动到顶部发生onScrolltoupper')
+    console.log('scrollHeight: ' + e.target.scrollHeight)
+    console.log('scrollTop: ' + e.target.scrollTop)
   }
 
-  onScroll = () => {
+  onScroll = (e) => {
+    console.log('onScroll')
+    console.log('scrollHeight: ' + e.target.scrollHeight)
+    console.log('scrollTop: ' + e.target.scrollTop)
+  }
+
+  handleFocus = (e) => {
+  }
+
+  handleBlur = (e) => {
 
   }
 
@@ -178,40 +197,23 @@ class Home extends Component {
             { postList }
           </ScrollView>
         }
-        {/* <AtLoadMore
-          onClick={this.handleClickMore.bind(this)}
-          status={this.state.status}
-          moreText='查看更多'
-          loadingText='加载中'
-          noMoreText='没有更多'
-        /> */}
         <View id='home-input' className='home-input'>
           <View className='home-input-wrap'>
-            <Input className='home-input-content' 
-              onChange={this.handelChange.bind(this)} 
+            <Textarea className='home-input-content' 
+              onInput={this.handelChange.bind(this)} 
+              onFocus={this.handleFocus.bind(this)}
+              onBlur={this.handleBlur.bind(this)}
               type='text' 
+              cursor-spacing={this.state.cursorSpacing}
               value={this.state.content}
               placeholder='在这里输入内容吧' 
-              // focus 
+              auto-Height='true'
             />
           </View>
           <View onClick={this.handleCommit} className='home-input-icon-part'>
             <Icon className='home-input-icon' type='success' color='lavenderblush' />
           </View>
         </View>
-        {/* <AtToast
-          isOpened
-          status='success'
-          // isOpened={this.state.addSuccess}
-        ></AtToast> */}
-        {/* <AtToast
-          isOpened
-          text={this.state.toastText}
-          iconSize={iconSize}
-          iconType={iconType}
-          iconColor={iconColor}
-          isHiddenIcon={isHiddenIcon}
-        ></AtToast> */}
       </View>
     )
   }
