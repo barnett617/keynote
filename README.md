@@ -19,3 +19,10 @@
 1. 图片+标题 -> 点击图片或标题进入详情页，详情页包含图片、标题和正文
 2. 图片+概要 -> 点击图片或概要进入详情页，详情页包含图片、标题和正文
 3. 图片+正文 -> 点击不跳转
+
+### 文档
+
+- [Taro](https://nervjs.github.io/taro/docs/README.html)
+- [小程序API](https://developers.weixin.qq.com/miniprogram/dev/api/)
+- [知晓云文档](https://doc.minapp.com/)
+- [知晓云控制台](https://cloud.minapp.com/dashboard/#/)

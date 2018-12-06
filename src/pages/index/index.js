@@ -1,8 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
+import { View, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-import { AtButton } from 'taro-ui'
-
 import { add, minus, asyncAdd } from '../../actions/counter'
 
 import './index.scss'
@@ -26,25 +24,24 @@ class Index extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      canGo: false,
       canIUse: Taro.canIUse('Button.open-type.getUserInfo')
     }
   }
 
-    config = {
+  config = {
     navigationBarTitleText: 'PickMee'
   }
 
   componentWillMount () {
     const self = this;
     Taro.getSetting({
-      success (res){
-        if (res.authSetting['scope.userInfo']) {
+      success (settingRes){
+        if (settingRes.authSetting['scope.userInfo']) {
           // 已经授权，可以直接调用 getUserInfo 获取头像昵称
           Taro.getUserInfo({
-            success: function(res) {
+            success: function(userinfoRes) {
               self.setState({ canIUse: true })
-              console.log(res.userInfo)
+              console.log('userInfo: ' + userinfoRes.userInfo)
             }
           })
         }
@@ -56,7 +53,8 @@ class Index extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+    console.log('this.props: ' + this.props);
+    console.log('nextProps: ' + nextProps);
   }
 
   componentWillUnmount () { }
@@ -89,7 +87,7 @@ class Index extends Component {
                   duration: 2000
                 })
                 self.setState({ canIUse: true })
-                console.log(res.userInfo)
+                console.log('userInfo: ' + res.userInfo)
               }
             })
           }
@@ -108,8 +106,6 @@ class Index extends Component {
   render () {
     return (
       <View className='index'>
-        {/* <AtButton type='primary' size='normal' onClick={this.handleClick}>Pick me!</AtButton> */}
-        {/* <Button className='index-btn' onClick={this.handleClick}>Pick me!</Button> */}
         <Button Taro-if='{{canIUse}}' onClick={this.handleClick} open-type='getUserInfo'>Pick Me!</Button>
       </View>
     )
