@@ -7,7 +7,8 @@ import './index.scss'
 class Home extends Component {
 
   config = {
-    navigationBarTitleText: 'PickMee'
+    navigationBarTitleText: 'PickMee',
+    enablePullDownRefresh: true
   }
 
   constructor(props) {
@@ -35,7 +36,33 @@ class Home extends Component {
 
   componentDidMount () {
     this.handleLogin();
+    this.commonListener();
+    
     // this.handleList();
+  }
+
+  onPullDownRefresh () {
+    const self = this;
+    Taro.showNavigationBarLoading();  
+    // 显示 loading 提示框,在 ios 系统下，会导致顶部的加载的三个点看不见  
+    // wx.showLoading({  
+    //   title: '数据加载中...',  
+    // });  
+    setTimeout(function() {  
+      self.handleList();  
+    }, 1000);  
+    // Taro.startPullDownRefresh(params).then(res => {
+    //   Taro.showToast({
+    //     title: '刷新成功',
+    //     icon: 'none',
+    //     duration: 2000
+    //   })
+    // }, err => {
+    // });
+  }
+
+  commonListener () {
+    
   }
 
   componentWillReceiveProps (nextProps) {
@@ -85,6 +112,15 @@ class Home extends Component {
     query.compare('userUniformId', '=', id);
       TableObj.setQuery(query).limit(1000).find().then(res => {
         if (res.statusCode === 200) {
+          Taro.stopPullDownRefresh();  
+          // wx.hideLoading();  
+          Taro.hideNavigationBarLoading();  
+          console.info('下拉数据加载完成.');  
+          Taro.showToast({
+            title: '叮叮盯盯',
+            icon: 'none',
+            duration: 2000
+          })
           this.setState({
             posts: res.data.objects,
             scrollTop: 1000 * (res.data.objects.length)
