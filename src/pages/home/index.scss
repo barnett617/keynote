@@ -13,15 +13,31 @@
     // height: 100px;
     overflow-y: scroll;
   }
-  &-list-item-view {
-    margin: 25px;
-    box-sizing: border-box;
-    &-text {
-      background-color: lavenderblush;
+  &-list-item {
+    &-wrap {
     }
-    &-image {
-      image {
-        width: 60%;
+    &-view {
+      margin: 25px;
+      box-sizing: border-box;
+      &-text {
+        background-color: lavenderblush;
+      }
+      &-image {
+        image {
+          width: 60%;
+        }
+      }
+      &-time {
+        font-size: 18px;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        text {
+          padding: 2px;
+          border-radius: 4px;
+          background-color: lightgray;
+        }
       }
     }
   }

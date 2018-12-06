@@ -1,5 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Input, ScrollView, Text, Textarea, Button, Image } from '@tarojs/components'
+import dateFormat from '../../utils/dateFormat';
 
 import './index.scss'
 
@@ -291,7 +292,6 @@ class Home extends Component {
         }
       }
     })
-    // Taro.uploadImage();
   }
 
   previewImage = (e) => {
@@ -304,21 +304,32 @@ class Home extends Component {
 
   render () {
     const postList = this.state.posts.map((item, index) => {
+      const showTime = dateFormat.common(item.created_at)
       return (
         item.type === 'image'
         ?
-        <View className='home-list-item-view home-list-item-view-image' key={index}>
-          <Image 
-            onClick={this.previewImage}
-            // 宽度不变，高度自动变化，保持原图宽高比不变
-            mode='widthFix' 
-            data-src={item.content}
-            src={item.content}
-          ></Image>
+        <View className='home-list-item-wrap'>
+          <View className='home-list-item-view home-list-item-view-image' key={index}>
+            <Image 
+              onClick={this.previewImage}
+              // 宽度不变，高度自动变化，保持原图宽高比不变
+              mode='widthFix' 
+              data-src={item.content}
+              src={item.content}
+            ></Image>
+          </View>
+          <View className='home-list-item-view-time'>
+            <Text>{showTime}</Text>
+          </View>
         </View>
         :
-        <View className='home-list-item-view' key={index}>
-          <Text className='home-list-item-view-text'>{item.content}</Text>
+        <View className='home-list-item-wrap'>
+          <View className='home-list-item-view' key={index}>
+            <Text className='home-list-item-view-text'>{item.content}</Text>
+          </View>
+          <View className='home-list-item-view-time'>
+            <Text>{showTime}</Text>
+          </View>
         </View>
       )
     });
