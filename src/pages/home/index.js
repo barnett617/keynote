@@ -24,7 +24,9 @@ class Home extends Component {
       canCommit: false,
       btnLoading: false,
       btnText: '+',
-      type: ''
+      type: '',
+      // 图片列表
+      imageList: []
     }
   }
 
@@ -67,6 +69,11 @@ class Home extends Component {
         this.setState({
           posts: res.data.objects,
           scrollTop: 1000 * (res.data.objects.length)
+        });
+        res.data.objects.forEach(element => {
+          if (element.type && element.type === 'image') {
+            self.state.imageList.push(element.content);
+          }
         });
       }
     }, err => {
@@ -288,9 +295,10 @@ class Home extends Component {
   }
 
   previewImage = (e) => {
+    const self = this;
     Taro.previewImage({
       current: e.currentTarget.dataset.src, // 当前显示图片的http链接
-      urls: [e.currentTarget.dataset.src] // 需要预览的图片http链接列表
+      urls: self.state.imageList // 需要预览的图片http链接列表
     })
   }
 
