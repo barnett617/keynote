@@ -287,13 +287,26 @@ class Home extends Component {
     // Taro.uploadImage();
   }
 
+  previewImage = (e) => {
+    Taro.previewImage({
+      current: e.currentTarget.dataset.src, // 当前显示图片的http链接
+      urls: [e.currentTarget.dataset.src] // 需要预览的图片http链接列表
+    })
+  }
+
   render () {
     const postList = this.state.posts.map((item, index) => {
       return (
         item.type === 'image'
         ?
-        <View className='home-list-item-view' key={index}>
-          <Image className='home-list-item-view-text' src={item.content}></Image>
+        <View className='home-list-item-view home-list-item-view-image' key={index}>
+          <Image 
+            onClick={this.previewImage}
+            // 宽度不变，高度自动变化，保持原图宽高比不变
+            mode='widthFix' 
+            data-src={item.content}
+            src={item.content}
+          ></Image>
         </View>
         :
         <View className='home-list-item-view' key={index}>
@@ -307,7 +320,7 @@ class Home extends Component {
           this.state.posts.length < 1
           ?
           <View className='home-empty'>
-            <Text>正在试图加载内容哦</Text>
+            <Text>在奋力加载内容哦~ n(*≧▽≦*)n</Text>
           </View>
           :
           <ScrollView

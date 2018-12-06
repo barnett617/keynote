@@ -19,6 +19,11 @@
     &-text {
       background-color: lavenderblush;
     }
+    &-image {
+      image {
+        width: 60%;
+      }
+    }
   }
   &-input {
     position: fixed;
