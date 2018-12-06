@@ -24,7 +24,8 @@ class Index extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      canIUse: Taro.canIUse('Button.open-type.getUserInfo')
+      canIUse: Taro.canIUse('Button.open-type.getUserInfo'),
+      openId: ''
     }
   }
 
@@ -34,6 +35,9 @@ class Index extends Component {
 
   componentWillMount () {
     const self = this;
+
+    self.handleLogin();
+
     Taro.getSetting({
       success (settingRes){
         if (settingRes.authSetting['scope.userInfo']) {
@@ -46,6 +50,19 @@ class Index extends Component {
           })
         }
       }
+    })
+  }
+
+  handleLogin () {
+    const self = this;
+    // 微信用户登录小程序
+    Taro.BaaS.login(false).then(res => {
+      // 登录成功
+      self.setState({
+        openId: res.openid
+      });
+    }, err => {
+      // 登录失败
     })
   }
 

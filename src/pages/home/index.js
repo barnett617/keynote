@@ -27,12 +27,15 @@ class Home extends Component {
       btnText: '+',
       type: '',
       // 图片列表
-      imageList: []
+      imageList: [],
+      // 用户唯一标示
+      openId: ''
     }
   }
 
   componentDidMount () {
-    this.handleList();
+    this.handleLogin();
+    // this.handleList();
   }
 
   componentWillReceiveProps (nextProps) {
@@ -45,8 +48,21 @@ class Home extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+  
+  handleLogin () {
+    const self = this;
+    // 微信用户登录小程序
+    Taro.BaaS.login(false).then(res => {
+      // 登录成功
+      self.setState({
+        openId: res.openid
+      }, self.handleList(res.openid));
+    }, err => {
+      // 登录失败
+    })
+  }
 
-  handleList = () => {
+  handleList = (openId) => {
     const self = this;
     // var query = Taro.createSelectorQuery()
     // let inputHeight;
@@ -65,22 +81,24 @@ class Home extends Component {
     let tableID = 58649
     let TableObj = new Taro.BaaS.TableObject(tableID)
     var query = new Taro.BaaS.Query()
-    TableObj.setQuery(query).limit(1000).find().then(res => {
-      if (res.statusCode === 200) {
-        this.setState({
-          posts: res.data.objects,
-          scrollTop: 1000 * (res.data.objects.length)
-        });
-        res.data.objects.forEach(element => {
-          if (element.type && element.type === 'image') {
-            self.state.imageList.push(element.content);
-          }
-        });
-      }
-    }, err => {
-      // err
-      console.log(err)
-    })
+    const id = openId ? openId : self.state.openId;
+    query.compare('userUniformId', '=', id);
+      TableObj.setQuery(query).limit(1000).find().then(res => {
+        if (res.statusCode === 200) {
+          this.setState({
+            posts: res.data.objects,
+            scrollTop: 1000 * (res.data.objects.length)
+          });
+          res.data.objects.forEach(element => {
+            if (element.type && element.type === 'image') {
+              self.state.imageList.push(element.content);
+            }
+          });
+        }
+      }, err => {
+        // err
+        console.log(err)
+      })
   }
 
   handleCommit = () => {
@@ -107,54 +125,56 @@ class Home extends Component {
               var userInfo = userRes.userInfo
               var gender = userInfo.gender //性别 0：未知、1：男、2：女
               const nickname = userInfo.nickName;
-              if (gender === 2 || nickname === '王艺谋') {
-                const params = {
-                  content: self.state.content,
-                  type: self.state.type
-                }
-                let tableID = 58649
-                let SinglePost = new Taro.BaaS.TableObject(tableID)
-                let postObj = SinglePost.create()
-                postObj.set(params).save().then(resp => {
-                  if (resp) {
-                    self.setState({
-                      canCommit: true,
-                      btnText: '+',
-                      btnLoading: false
-                    });
-                  }
-                  if (resp.statusCode === 201) {
-                    Taro.showToast({
-                      title: '发送成功',
-                      icon: 'success',
-                      duration: 2000
-                    })
-                    self.setState({
-                      content: ''
-                    });
-                    self.handleList();
-                  }
-                }, err => {
+
+              const params = {
+                content: self.state.content,
+                type: self.state.type,
+                userUniformId: self.state.openId
+              }
+              let tableID = 58649
+              let SinglePost = new Taro.BaaS.TableObject(tableID)
+              let postObj = SinglePost.create()
+              postObj.set(params).save().then(resp => {
+                if (resp) {
                   self.setState({
                     canCommit: true,
                     btnText: '+',
                     btnLoading: false
                   });
-                  console.log(err)
-                })
-              } else {
+                }
+                if (resp.statusCode === 201) {
+                  Taro.showToast({
+                    title: '发送成功',
+                    icon: 'success',
+                    duration: 2000
+                  })
+                  self.setState({
+                    content: ''
+                  });
+                  self.handleList();
+                }
+              }, err => {
                 self.setState({
                   canCommit: true,
                   btnText: '+',
                   btnLoading: false
                 });
-                Taro.showToast({
-                  title: '你不是星星不能发送哦',
-                  icon: 'none',
-                  duration: 2000
-                })
-                return
-              }
+                console.log(err)
+              })
+              // if (gender === 2 || nickname === '王艺谋') {
+              // } else {
+              //   self.setState({
+              //     canCommit: true,
+              //     btnText: '+',
+              //     btnLoading: false
+              //   });
+              //   Taro.showToast({
+              //     title: '你不是星星不能发送哦',
+              //     icon: 'none',
+              //     duration: 2000
+              //   })
+              //   return
+              // }
             }
           })
         }
@@ -309,6 +329,9 @@ class Home extends Component {
         item.type === 'image'
         ?
         <View className='home-list-item-wrap'>
+          <View className='home-list-item-view-time'>
+            <Text>{showTime}</Text>
+          </View>
           <View className='home-list-item-view home-list-item-view-image' key={index}>
             <Image 
               onClick={this.previewImage}
@@ -318,17 +341,14 @@ class Home extends Component {
               src={item.content}
             ></Image>
           </View>
-          <View className='home-list-item-view-time'>
-            <Text>{showTime}</Text>
-          </View>
         </View>
         :
         <View className='home-list-item-wrap'>
-          <View className='home-list-item-view' key={index}>
-            <Text className='home-list-item-view-text'>{item.content}</Text>
-          </View>
           <View className='home-list-item-view-time'>
             <Text>{showTime}</Text>
+          </View>
+          <View className='home-list-item-view' key={index}>
+            <Text className='home-list-item-view-text'>{item.content}</Text>
           </View>
         </View>
       )
