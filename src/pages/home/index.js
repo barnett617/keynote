@@ -256,7 +256,8 @@ class Home extends Component {
                       if (gender === 2 || nickname === '王艺谋') {
                         const params = {
                           content: data.path,
-                          type: 'image'
+                          type: 'image',
+                          userUniformId: self.state.openId
                         }
                         let tableID = 58649
                         let SinglePost = new Taro.BaaS.TableObject(tableID)
