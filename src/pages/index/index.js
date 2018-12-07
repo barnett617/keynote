@@ -59,7 +59,7 @@ class Index extends Component {
       })
     } else {
       Taro.showToast({
-        title: '正在识别你的身份，再次点击进入哦',
+        title: '正在识别你的身份，稍等哦~',
         icon: 'none',
         duration: 2000
       })
@@ -75,7 +75,7 @@ class Index extends Component {
           Taro.getUserInfo({
             success: function(userinfoRes) {
               Taro.showToast({
-                title: 'biubiubiu~',
+                title: 'biubiubiu~ 可以进啦！',
                 icon: 'none',
                 duration: 2000
               })

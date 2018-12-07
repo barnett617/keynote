@@ -216,7 +216,7 @@ class Home extends Component {
             let data = uploadRes.data  // res.data 为 Object 类型
             const imagePath = data.path
             // 上传图片到资源库后，发送一条消息
-            this.sendImageMessage(imagePath);
+            self.sendImageMessage(imagePath);
           }, err => {
             console.log('upload err: ' + err);
           })
