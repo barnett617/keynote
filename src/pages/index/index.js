@@ -1,31 +1,30 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
-import { add, minus, asyncAdd } from '../../actions/counter'
+// import { connect } from '@tarojs/redux'
+// import { add, minus, asyncAdd } from '../../actions/counter'
 
 import './index.scss'
 
 
-@connect(({ counter }) => ({
-  counter
-}), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
-  }
-}))
+// @connect(({ counter }) => ({
+//   counter
+// }), (dispatch) => ({
+//   add () {
+//     dispatch(add())
+//   },
+//   dec () {
+//     dispatch(minus())
+//   },
+//   asyncAdd () {
+//     dispatch(asyncAdd())
+//   }
+// }))
 class Index extends Component {
   
   constructor (props) {
     super(props)
     this.state = {
       canIUse: Taro.canIUse('Button.open-type.getUserInfo'),
-      openId: ''
     }
   }
 
@@ -34,36 +33,8 @@ class Index extends Component {
   }
 
   componentWillMount () {
-    const self = this;
-
-    self.handleLogin();
-
-    Taro.getSetting({
-      success (settingRes){
-        if (settingRes.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          Taro.getUserInfo({
-            success: function(userinfoRes) {
-              self.setState({ canIUse: true })
-              console.log('userInfo: ' + userinfoRes.userInfo)
-            }
-          })
-        }
-      }
-    })
-  }
-
-  handleLogin () {
-    const self = this;
-    // 微信用户登录小程序
-    Taro.BaaS.login(false).then(res => {
-      // 登录成功
-      self.setState({
-        openId: res.openid
-      });
-    }, err => {
-      // 登录失败
-    })
+    // 进入首页时异步获取用户信息
+    this.getSetting();
   }
 
   componentDidMount () {
@@ -81,7 +52,7 @@ class Index extends Component {
   componentDidHide () { }
 
   handleClick = () => {
-    const self = this;
+    // debugger
     if (this.state.canIUse) {
       Taro.navigateTo({
         url: '/pages/home/index'
@@ -92,25 +63,29 @@ class Index extends Component {
         icon: 'none',
         duration: 2000
       })
-      Taro.getSetting({
-        success (res){
-          if (res.authSetting['scope.userInfo']) {
-            // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-            Taro.getUserInfo({
-              success: function(res) {
-                Taro.showToast({
-                  title: '获取信息成功',
-                  icon: 'none',
-                  duration: 2000
-                })
-                self.setState({ canIUse: true })
-                console.log('userInfo: ' + res.userInfo)
-              }
-            })
-          }
-        }
-      })
     }
+  }
+
+  getSetting() {
+    const self = this;
+    Taro.getSetting({
+      success (settingRes){
+        if (settingRes.authSetting['scope.userInfo']) {
+          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+          Taro.getUserInfo({
+            success: function(userinfoRes) {
+              Taro.showToast({
+                title: 'biubiubiu~',
+                icon: 'none',
+                duration: 2000
+              })
+              self.setState({ canIUse: true })
+              console.log('userInfo: ' + JSON.stringify(userinfoRes.userInfo));
+            }
+          })
+        }
+      }
+    })
   }
 
   bindGetUserInfo (e) {
@@ -123,7 +98,11 @@ class Index extends Component {
   render () {
     return (
       <View className='index'>
-        <Button Taro-if='{{canIUse}}' onClick={this.handleClick} open-type='getUserInfo'>Pick Me!</Button>
+        <Button 
+          Taro-if='{{canIUse}}' 
+          onClick={this.handleClick} 
+          open-type='getUserInfo'
+        >Pick Me!</Button>
       </View>
     )
   }
