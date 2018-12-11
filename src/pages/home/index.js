@@ -29,7 +29,8 @@ class Home extends Component {
       // 图片列表
       imageList: [],
       // 用户唯一标示
-      openId: ''
+      openId: '',
+      analysisResult: []
     }
   }
 
@@ -157,11 +158,63 @@ class Home extends Component {
         self.setState({
           content: ''
         });
+        self.analysis();
         // 重查数据
         self.handleList();
       }
     }, err => {
       console.log('err: ' + err)
+    })
+  }
+
+  analysis () {
+    const self = this;
+    let result = '';
+    let content = self.state.content;
+    // 这里的接口需要在备案域名机器下，并且配置app开发
+    Taro.request({
+      url: 'http://101.132.174.1:8082/analysis/',
+      method: 'POST',
+      data: {
+        sentence: self.state.content,
+      },
+      header: {
+        'content-type': 'application/json'
+      }
+    }).then(res => {
+      console.log('res: ' + JSON.stringify(res))
+      console.log('res.data.data: ' + JSON.stringify(res.data.data))
+      res.data.data.forEach(element => {
+        result += (element + ' ')
+      });
+      if (res && +res.code === 200) {
+        self.setState({
+          analysisResult: res.data.data
+        })
+      }
+      Taro.showModal({
+        title: '情绪评估',
+        content: '我们对于内容【' + content + '】的评估结果是： ' + result,
+        confirmText: '对的！',
+        cancelText: '不对~',
+        success(successRes) {
+          if (successRes.confirm) {
+            Taro.showToast({
+              title: '你点击了对的！',
+              icon: 'success',
+              duration: 2000
+            })
+          } else if (successRes.cancel) {
+            Taro.showToast({
+              title: '你点击了不对~',
+              icon: 'success',
+              duration: 2000
+            })
+          }
+        }
+      })
+    }, err => {
+      console.log('analysis error: ' + err)
     })
   }
 
@@ -318,6 +371,7 @@ class Home extends Component {
             <Textarea className='home-input-content' 
               onInput={this.handelChange.bind(this)} 
               onConfirm={this.handleConfirm.bind(this)}
+              onBlur={this.handleConfirm.bind(this)}
               type='text' 
               cursorSpacing={this.state.cursorSpacing}
               value={this.state.content}

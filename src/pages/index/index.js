@@ -52,7 +52,6 @@ class Index extends Component {
   componentDidHide () { }
 
   handleClick = () => {
-    // debugger
     if (this.state.canIUse) {
       Taro.navigateTo({
         url: '/pages/home/index'
