@@ -175,6 +175,9 @@ class Home extends Component {
     let result = '';
     let content = self.state.content;
     // 这里的接口需要在备案域名机器下，并且配置app开发
+    Taro.showLoading({
+      title: '情绪分析中',
+    })
     Taro.request({
       url: 'http://101.132.174.1:8082/analysis/',
       method: 'POST',
@@ -185,6 +188,7 @@ class Home extends Component {
         'content-type': 'application/json'
       }
     }).then(res => {
+      Taro.hideLoading()
       console.log('res: ' + JSON.stringify(res))
       console.log('res.data.data: ' + JSON.stringify(res.data.data))
       res.data.data.forEach(element => {
@@ -217,6 +221,12 @@ class Home extends Component {
         }
       })
     }, err => {
+      Taro.hideLoading()
+      Taro.showToast({
+        title: '分析失败~',
+        icon: 'none',
+        duration: 2000
+      })
       console.log('analysis error: ' + err)
       // 收集错误的事件
       Taro.BaaS.ErrorTracker.track(err)
@@ -266,7 +276,17 @@ class Home extends Component {
           let MyFile = new Taro.BaaS.File()
           let fileParams = {filePath: res.tempFilePaths[0]}
           let metaData = {categoryName: 'SDK'}
+          // Taro.showLoading({
+          //   title: '上传中',
+          // })
+          Taro.showToast({
+            title: '上传中',
+            icon: 'loading',
+            duration: 10000
+          })
           MyFile.upload(fileParams, metaData).then(uploadRes => {
+            // Taro.hideLoading()
+            Taro.hideToast();
             /*
             * 注: 只要是服务器有响应的情况都会进入 success, 即便是 4xx，5xx 都会进入这里
             * 如果上传成功则会返回资源远程地址,如果上传失败则会返回失败信息
@@ -293,7 +313,11 @@ class Home extends Component {
     let tableID = 58649
     let SinglePost = new Taro.BaaS.TableObject(tableID)
     let postObj = SinglePost.create()
+    Taro.showLoading({
+      title: '发送中',
+    })
     postObj.set(params).save().then(resp => {
+      Taro.hideLoading()
       if (resp.statusCode === 201) {
         Taro.showToast({
           title: '发送成功',
@@ -303,6 +327,12 @@ class Home extends Component {
         self.handleList();
       }
     }, err => {
+      Taro.hideLoading()
+      Taro.showToast({
+        title: '发送失败',
+        icon: 'none',
+        duration: 2000
+      })
       console.log('send image message err: ' + err)
     })
   }
