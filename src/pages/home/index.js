@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, ScrollView, Text, Textarea, Button, Image } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
+import { $wuxDialog } from '../../lib/dialog/index'
 import './index.scss'
 
 class Home extends Component {
@@ -8,7 +9,9 @@ class Home extends Component {
   config = {
     navigationBarTitleText: 'PickMee',
     "usingComponents": {
-      "wux-icon": "../../lib/icon/index"
+      "wux-icon": "../../lib/icon/index",
+      "wux-notice-bar": "../../lib/notice-bar/index",
+      // "wux-dialog": "../../lib/dialog/index"
     }
     // enablePullDownRefresh: true
   }
@@ -348,6 +351,20 @@ class Home extends Component {
     })
   }
 
+  showNotice () {
+    Taro.showModal({
+      title: '更新通告',
+      content: '增加了更新通知',
+      confirmText: '好的',
+      showCancel: false,
+      success(successRes) {
+        if (successRes.confirm) {
+          
+        } 
+      }
+    })
+  }
+
   render () {
     const postList = this.state.posts.map((item, index) => {
       const showTime = dateFormat.common(item.created_at)
@@ -381,6 +398,13 @@ class Home extends Component {
     });
     return (
       <View className='home'>
+        <View onClick={this.showNotice}>
+          <wux-notice-bar
+            content='有新功能更新哦~，点击查看'
+            mode='closable'
+          >
+          </wux-notice-bar>
+        </View>
         {
           this.state.posts.length < 1
           ?
