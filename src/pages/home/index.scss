@@ -47,7 +47,10 @@
     background-color: lavender;
     align-items: center;
     &-wrap {
-      width: 600px;
+      // width: 600px;
+      textarea {
+        width: 560px;
+      }
     }
     &-content {
       margin: 10px;
@@ -62,7 +65,7 @@
       height: 60px;
     }
     &-btn {
-      margin-left: 60px;
+      margin-left: 16px;
       button {
         height: 60px;
         width: 60px;

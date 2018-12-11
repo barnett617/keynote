@@ -7,6 +7,9 @@ class Home extends Component {
 
   config = {
     navigationBarTitleText: 'PickMee',
+    "usingComponents": {
+      "wux-icon": "../../lib/icon/index"
+    }
     // enablePullDownRefresh: true
   }
 
@@ -372,7 +375,7 @@ class Home extends Component {
           <View className='home-input-wrap'>
             <Textarea className='home-input-content' 
               onInput={this.handelChange.bind(this)} 
-              onConfirm={this.handleConfirm.bind(this)}
+              // onConfirm={this.handleConfirm.bind(this)}
               // onBlur={this.handleConfirm.bind(this)}
               type='text' 
               cursorSpacing={this.state.cursorSpacing}
@@ -382,16 +385,11 @@ class Home extends Component {
               auto-Height='true'
             />
           </View>
-          <View className='home-input-btn'>
-            <Button
-              onClick={this.uploadImage}
-              // className='home-input-icon-part'
-              size='default'
-              type='primary'
-              plain='true'
-            >
-                
-            </Button>
+          <View onClick={this.uploadImage} className='home-input-btn'>
+            <wux-icon size='28' color='#999999' type='md-images' />
+          </View>
+          <View onClick={this.handleConfirm.bind(this)} className='home-input-btn'>
+            <wux-icon size='28' color='#999999' type='md-paper-plane' />
           </View>
         </View>
       </View>
