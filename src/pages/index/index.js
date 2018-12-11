@@ -65,6 +65,20 @@ class Index extends Component {
     }
   }
 
+  handleClickLong = () => {
+    if (this.state.canIUse) {
+      Taro.navigateTo({
+        url: '/pages/long/index'
+      })
+    } else {
+      Taro.showToast({
+        title: '正在识别你的身份，稍等哦~',
+        icon: 'none',
+        duration: 2000
+      })
+    }
+  }
+
   getSetting() {
     const self = this;
     Taro.getSetting({
@@ -101,7 +115,12 @@ class Index extends Component {
           Taro-if='{{canIUse}}' 
           onClick={this.handleClick} 
           open-type='getUserInfo'
-        >Pick Me!</Button>
+        >小情绪~！</Button>
+        <Button 
+          Taro-if='{{canIUse}}' 
+          onClick={this.handleClickLong} 
+          open-type='getUserInfo'
+        >长篇大论~！</Button>
       </View>
     )
   }

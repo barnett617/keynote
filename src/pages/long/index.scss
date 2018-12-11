@@ -1,0 +1,16 @@
+.long-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  &-textarea {
+    border: 1px #999999 solid;
+  }
+  &-btn {
+    display: flex;
+    button {
+      margin: 20px 30px;
+    }
+  }
+}
