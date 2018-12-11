@@ -41,6 +41,12 @@ class App extends Component {
       Taro.getUserInfo,
       Taro.requestPayment)
     Taro.BaaS.init(clientId)
+    Taro.BaaS.ErrorTracker.enable()  // 开启 bugout 功能
+  }
+
+  onError(res) {
+    // 当小程序产生错误时，会进行上报
+    Taro.BaaS.ErrorTracker.track(res)
   }
 
   componentDidShow () {}

@@ -215,6 +215,8 @@ class Home extends Component {
       })
     }, err => {
       console.log('analysis error: ' + err)
+      // 收集错误的事件
+      Taro.BaaS.ErrorTracker.track(err)
     })
   }
 
@@ -371,7 +373,7 @@ class Home extends Component {
             <Textarea className='home-input-content' 
               onInput={this.handelChange.bind(this)} 
               onConfirm={this.handleConfirm.bind(this)}
-              onBlur={this.handleConfirm.bind(this)}
+              // onBlur={this.handleConfirm.bind(this)}
               type='text' 
               cursorSpacing={this.state.cursorSpacing}
               value={this.state.content}
