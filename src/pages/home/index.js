@@ -3,6 +3,7 @@ import { View, ScrollView, Text, Textarea, Button, Image } from '@tarojs/compone
 import dateFormat from '../../utils/dateFormat';
 import { $wuxDialog } from '../../lib/dialog/index'
 import './index.scss'
+import '../../lib/styles/index.wxss';
 
 class Home extends Component {
 
@@ -11,6 +12,8 @@ class Home extends Component {
     "usingComponents": {
       "wux-icon": "../../lib/icon/index",
       "wux-notice-bar": "../../lib/notice-bar/index",
+      "wux-spin": "../../lib/spin/index",
+      "wux-button": "../../lib/button/index"
       // "wux-dialog": "../../lib/dialog/index"
     }
     // enablePullDownRefresh: true
@@ -20,23 +23,17 @@ class Home extends Component {
     super(props)
     this.state = {
       posts: [],
-      // 输入框内的内容
       content: '',
-      // scrollViewHeight: 100,
       // 滑动区域上滑距离
       scrollTop: 0,
-      // 光标与键盘的距离，单位 px 
-      cursorSpacing: 0,
-      // 控制发送按钮，防止重复提交
-      // canCommit: false,
-      // btnLoading: false,
-      // btnText: '+',
       type: '',
       // 图片列表
       imageList: [],
       // 用户唯一标示
       openId: '',
-      analysisResult: []
+      analysisResult: [],
+      spinning: false,
+      notice: ''
     }
   }
 
@@ -52,8 +49,12 @@ class Home extends Component {
     const self = this;
     Taro.BaaS.login(false).then(res => {
       self.setState({
-        openId: res.openid
-      }, self.handleList(res.openid));
+        openId: res.openid,
+        spinning: true
+      });
+      setTimeout(function () {
+        self.handleList(res.openid)
+      }, 3000)
     }, err => {
       // 登录失败
       console.log('err: ' + err);
@@ -72,6 +73,9 @@ class Home extends Component {
     var query = new Taro.BaaS.Query()
     query.compare('userUniformId', '=', id);
     TableObj.setQuery(query).limit(1000).find().then(res => {
+      self.setState({
+        spinning: false
+      });
       if (res.statusCode === 200) {
         Taro.stopPullDownRefresh();  
         Taro.hideNavigationBarLoading();  
@@ -140,11 +144,6 @@ class Home extends Component {
       })
       return
     }
-    // self.setState({
-    //   canCommit: false,
-    //   btnText: '',
-    //   btnLoading: true
-    // });
     const params = {
       content: self.state.content,
       type: self.state.type,
@@ -204,7 +203,7 @@ class Home extends Component {
       }
       Taro.showModal({
         title: '情绪评估',
-        content: '我们对于内容【' + content + '】的评估结果是： ' + result,
+        content: '我们对于内容【' + content + '】的评估结果是： \n' + result,
         confirmText: '对的！',
         cancelText: '不对~',
         success(successRes) {
@@ -244,7 +243,6 @@ class Home extends Component {
       this.setState({
         content: e.target.value,
         type: 'text',
-        // canCommit: true
       });
     }
   }
@@ -279,9 +277,6 @@ class Home extends Component {
           let MyFile = new Taro.BaaS.File()
           let fileParams = {filePath: res.tempFilePaths[0]}
           let metaData = {categoryName: 'SDK'}
-          // Taro.showLoading({
-          //   title: '上传中',
-          // })
           Taro.showToast({
             title: '上传中',
             icon: 'loading',
@@ -354,7 +349,8 @@ class Home extends Component {
   showNotice () {
     Taro.showModal({
       title: '更新通告',
-      content: '增加了更新通知',
+      content: '1、【首页】静默获取登录信息\r\n2、【样式】首页按钮及主页面输入框样式调整\n3、【加载】增加数据加载中样式\n4、'+
+      '【格式】情绪分析结果表情换行显示',
       confirmText: '好的',
       showCancel: false,
       success(successRes) {
@@ -363,6 +359,11 @@ class Home extends Component {
         } 
       }
     })
+  }
+
+  handleFocus (e) {
+    // 获取键盘高度
+    const height = e.detail.height;
   }
 
   render () {
@@ -397,21 +398,15 @@ class Home extends Component {
       )
     });
     return (
-      <View className='home'>
-        <View onClick={this.showNotice}>
-          <wux-notice-bar
-            content='有新功能更新哦~，点击查看'
-            mode='closable'
-          >
-          </wux-notice-bar>
-        </View>
-        {
-          this.state.posts.length < 1
-          ?
-          <View className='home-empty'>
-            <Text>在奋力加载内容哦~ n(*≧▽≦*)n</Text>
+      <wux-spin className='spin' nested='true' spinning={this.state.spinning} tip='内容正在狂奔而来！别急~'>
+        <View className='home'>
+          <View className={this.state.notice} onClick={this.showNotice}>
+            <wux-notice-bar
+              content='有新功能更新哦~，点击查看'
+              mode='closable'
+            >
+            </wux-notice-bar>
           </View>
-          :
           <ScrollView
             className='home-scrollview'
             scrollY
@@ -424,29 +419,23 @@ class Home extends Component {
           >
             { postList }
           </ScrollView>
-        }
-        <View id='home-input' className='home-input'>
-          <View className='home-input-wrap'>
-            <Textarea className='home-input-content' 
-              onInput={this.handelChange.bind(this)} 
-              // onConfirm={this.handleConfirm.bind(this)}
-              // onBlur={this.handleConfirm.bind(this)}
-              type='text' 
-              cursorSpacing={this.state.cursorSpacing}
-              value={this.state.content}
-              adjustPosition='true'
-              // placeholder='在这里输入内容吧' 
-              auto-Height='true'
-            />
-          </View>
-          <View onClick={this.uploadImage} className='home-input-btn'>
-            <wux-icon size='28' color='#999999' type='md-images' />
-          </View>
-          <View onClick={this.handleConfirm.bind(this)} className='home-input-btn'>
-            <wux-icon size='28' color='#999999' type='md-paper-plane' />
+          <View id='home-input' className='home-input'>
+              <Textarea className='home-input-content' 
+                onInput={this.handelChange.bind(this)} 
+                type='text' 
+                onFocus={this.handleFocus}
+                cursorSpacing='9'
+                value={this.state.content}
+              />
+            <View onClick={this.uploadImage} className='home-input-btn'>
+              <wux-icon size='28' color='#999999' type='md-images' />
+            </View>
+            <View onClick={this.handleConfirm.bind(this)} className='home-input-btn'>
+              <wux-icon size='28' color='#999999' type='md-paper-plane' />
+            </View>
           </View>
         </View>
-      </View>
+      </wux-spin>
     )
   }
 }

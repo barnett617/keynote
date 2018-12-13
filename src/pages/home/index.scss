@@ -1,5 +1,6 @@
 .home {
-  height: 100%;
+  height: 100vh;
+  position: relative;
   display: flex;
   flex-direction: column;
   &-empty {
@@ -9,8 +10,10 @@
     align-items: center;
   }
   &-scrollview {
-    height: calc(100vh - 180px);
-    overflow-y: scroll;
+    // flex-grow: 1;
+    // 使得滑动区域的内容一直处于最新的地方，并自动下滑
+    height: calc(100vh - 170px);
+    // overflow-y: scroll;
   }
   &-list-item {
     &-view {
@@ -39,30 +42,21 @@
     }
   }
   &-input {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
-    // height: 150px;
     display: flex;
     background-color: lavender;
     align-items: center;
-    &-wrap {
-      // width: 600px;
-      textarea {
-        width: 560px;
-      }
-    }
     &-content {
       margin: 10px;
       margin-left: 30px;
-      padding: 5px;
-      line-height: 60px;
+      width: 560px;
       font-size: 30px;
-      box-sizing: border-box;
-      border:1px solid lavender;
-      border-radius:15px;
-      background:white;
+      line-height: 32px;
       height: 60px;
+      border:1px solid lavender;
+      background:white;
     }
     &-btn {
       margin-left: 16px;

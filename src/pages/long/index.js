@@ -1,13 +1,11 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Textarea, Button, Image } from '@tarojs/components'
-import dateFormat from '../../utils/dateFormat';
+import { View, Textarea, Button } from '@tarojs/components'
 import './index.scss'
 
 class Home extends Component {
 
   config = {
     navigationBarTitleText: 'PickMee',
-    // enablePullDownRefresh: true
   }
 
   constructor(props) {
@@ -90,29 +88,6 @@ class Home extends Component {
     })
   }
 
-  /**
-   * 内置监听下拉动作
-   */
-  onPullDownRefresh () {
-    const self = this;
-    Taro.showNavigationBarLoading();  
-    // 显示 loading 提示框,在 ios 系统下，会导致顶部的加载的三个点看不见  
-    // wx.showLoading({  
-    //   title: '数据加载中...',  
-    // });  
-    setTimeout(function() {  
-      self.handleList();  
-    }, 1000);  
-    // Taro.startPullDownRefresh(params).then(res => {
-    //   Taro.showToast({
-    //     title: '刷新成功',
-    //     icon: 'none',
-    //     duration: 2000
-    //   })
-    // }, err => {
-    // });
-  }
-
   componentWillReceiveProps (nextProps) {
     console.log('this.props: ' + this.props);
     console.log('nextProps: ' + nextProps);
@@ -134,11 +109,6 @@ class Home extends Component {
       })
       return
     }
-    // self.setState({
-    //   canCommit: false,
-    //   btnText: '',
-    //   btnLoading: true
-    // });
     const params = {
       content: self.state.content,
       type: self.state.type,

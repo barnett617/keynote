@@ -1,6 +1,8 @@
 import Taro, { Component } from '@tarojs/taro'
 import '@tarojs/async-await'
 import { Provider } from '@tarojs/redux'
+import './assets/styles/weui.wxss';
+// import './assets/styles/skyvow.wxss';    // 重写全局样式
 
 import Index from './pages/index'
 

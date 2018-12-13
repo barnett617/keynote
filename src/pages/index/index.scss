@@ -1,13 +1,8 @@
-.index {
+.page {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   background-color: aliceblue;
-  button {
-    // height: 40px;
-    margin: 20px;
-    border-radius: 10px;
-  }
 }
