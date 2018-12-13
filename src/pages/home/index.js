@@ -13,7 +13,9 @@ class Home extends Component {
       "wux-icon": "../../lib/icon/index",
       "wux-notice-bar": "../../lib/notice-bar/index",
       "wux-spin": "../../lib/spin/index",
-      "wux-button": "../../lib/button/index"
+      "wux-button": "../../lib/button/index",
+      "wux-card": "../../lib/card/index",
+      "wux-wing-blank": "../../lib/wing-blank/index"
       // "wux-dialog": "../../lib/dialog/index"
     }
     // enablePullDownRefresh: true
@@ -33,7 +35,9 @@ class Home extends Component {
       openId: '',
       analysisResult: [],
       spinning: false,
-      notice: ''
+      notice: '',
+      modal: 'hide',
+      shadow: 'hide',
     }
   }
 
@@ -347,23 +351,34 @@ class Home extends Component {
   }
 
   showNotice () {
-    Taro.showModal({
-      title: '更新通告',
-      content: '1、【首页】静默获取登录信息\r\n2、【样式】首页按钮及主页面输入框样式调整\n3、【加载】增加数据加载中样式\n4、'+
-      '【格式】情绪分析结果表情换行显示',
-      confirmText: '好的',
-      showCancel: false,
-      success(successRes) {
-        if (successRes.confirm) {
-          
-        } 
-      }
+    this.setState({
+      modal: 'modal',
+      shadow: 'shadow'
     })
+    // Taro.showModal({
+    //   title: '更新通告',
+    //   content: '【首页】静默获取登录信息\n【样式】首页按钮及主页面输入框样式调整\n【加载】增加数据加载中样式\n'+
+    //   '【格式】情绪分析结果表情换行显示',
+    //   confirmText: '好的',
+    //   showCancel: false,
+    //   success(successRes) {
+    //     if (successRes.confirm) {
+          
+    //     } 
+    //   }
+    // })
   }
 
   handleFocus (e) {
     // 获取键盘高度
     const height = e.detail.height;
+  }
+
+  hideModal () {
+    this.setState({
+      modal: 'hide',
+      shadow: 'hide'
+    })
   }
 
   render () {
@@ -432,6 +447,30 @@ class Home extends Component {
             </View>
             <View onClick={this.handleConfirm.bind(this)} className='home-input-btn'>
               <wux-icon size='28' color='#999999' type='md-paper-plane' />
+            </View>
+          </View>
+          <View className={this.state.shadow}>
+          </View>
+          <View className={this.state.modal}>
+            <View className='modal-title'>
+              更新公告
+            </View>
+            <View className='modal-content'>
+              <View className='modal-content-text'>
+                【首页】静默获取登录信息
+              </View>
+              <View className='modal-content-text'>
+                【样式】首页按钮及主页面样式调整
+              </View>
+              <View className='modal-content-text'>
+                【加载】增加数据加载中样式
+              </View>
+              <View className='modal-content-text'>
+                【格式】情绪分析结果表情换行显示
+              </View>
+            </View>
+            <View onClick={this.hideModal} className='modal-btn'>
+              好的
             </View>
           </View>
         </View>

@@ -76,7 +76,7 @@ class Index extends Component {
       })
     } else {
       Taro.showToast({
-        title: '正在识别你的身份，稍等哦~',
+        title: '正在读取信息，请稍等~',
         icon: 'none',
         duration: 2000
       })
