@@ -406,8 +406,8 @@ class Home extends Component {
           <View className='home-list-item-view-time'>
             <Text>{showTime}</Text>
           </View>
-          <View className='home-list-item-view' key={index}>
-            <Text className='home-list-item-view-text'>{item.content}</Text>
+          <View className='home-list-item-view-text' key={index}>
+            <Text>{item.content}</Text>
           </View>
         </View>
       )
@@ -457,17 +457,17 @@ class Home extends Component {
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【首页】静默获取登录信息
+                【配色】消息配色方案改为微信风格
               </View>
               <View className='modal-content-text'>
-                【样式】首页按钮及主页面样式调整
+                【优化】当天消息只显示时和分
               </View>
-              <View className='modal-content-text'>
+              {/* <View className='modal-content-text'>
                 【加载】增加数据加载中样式
               </View>
               <View className='modal-content-text'>
                 【格式】情绪分析结果表情换行显示
-              </View>
+              </View> */}
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
               好的
