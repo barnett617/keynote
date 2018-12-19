@@ -369,10 +369,10 @@ class Home extends Component {
     // })
   }
 
-  handleFocus (e) {
-    // 获取键盘高度
-    const height = e.detail.height;
-  }
+  // handleFocus (e) {
+  //   // 获取键盘高度
+  //   const height = e.detail.height;
+  // }
 
   hideModal () {
     this.setState({
@@ -435,19 +435,21 @@ class Home extends Component {
             { postList }
           </ScrollView>
           <View id='home-input' className='home-input'>
-              <Textarea className='home-input-content' 
-                onInput={this.handelChange.bind(this)} 
-                type='text' 
-                onFocus={this.handleFocus}
-                cursorSpacing='9'
-                value={this.state.content}
-              />
-            <View onClick={this.uploadImage} className='home-input-btn'>
-              <wux-icon size='28' color='#999999' type='md-images' />
-            </View>
-            <View onClick={this.handleConfirm.bind(this)} className='home-input-btn'>
-              <wux-icon size='28' color='#999999' type='md-paper-plane' />
-            </View>
+              <View onClick={this.uploadImage} className='home-input-btn-image'>
+                <wux-icon size='28' color='#999999' type='md-images' />
+              </View>
+              <View>
+                <Textarea className='home-input-content' 
+                  onInput={this.handelChange.bind(this)} 
+                  type='text' 
+                  // onFocus={this.handleFocus}
+                  cursorSpacing='9'
+                  value={this.state.content}
+                />
+              </View>
+              <View onClick={this.handleConfirm.bind(this)} className='home-input-btn-send'>
+                <wux-icon size='28' color='#999999' type='md-paper-plane' />
+              </View>
           </View>
           <View className={this.state.shadow}>
           </View>
@@ -457,17 +459,14 @@ class Home extends Component {
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【配色】消息配色方案改为微信风格
+                【首页】首页重新布局  
               </View>
               <View className='modal-content-text'>
-                【优化】当天消息只显示时和分
-              </View>
-              {/* <View className='modal-content-text'>
-                【加载】增加数据加载中样式
+                【配色】消息配色方案改变
               </View>
               <View className='modal-content-text'>
-                【格式】情绪分析结果表情换行显示
-              </View> */}
+                【样式】消息框增加阴影立体感
+              </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
               好的

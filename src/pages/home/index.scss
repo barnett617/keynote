@@ -3,7 +3,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: rgb(235, 235, 235);
+  background-color: rgb(255, 255, 255);
+  // background-color: rgb(235, 235, 235);
   &-empty {
     flex-grow: 1;
     display: flex;
@@ -13,26 +14,17 @@
   &-scrollview {
     // flex-grow: 1;
     // 使得滑动区域的内容一直处于最新的地方，并自动下滑
-    height: calc(100vh - 170px);
+    background-color: rgb(255, 255, 255);
+    height: calc(100vh - 160px);
+    // padding-bottom: 180px;
     // overflow-y: scroll;
   }
   &-list-item {
+    &-wrap {
+      margin: 25rpx 10px;
+      padding: 25px 20px;
+    }
     &-view {
-      margin: 25px;
-      box-sizing: border-box;
-      &-text {
-        margin: 25px;
-        border-radius: 10px;
-        background-color: rgb(176, 228, 111);
-        // background-color: rgb(255, 255, 255);
-        padding: 15px;
-        width: 60%;
-      }
-      &-image {
-        image {
-          width: 60%;
-        }
-      }
       &-time {
         font-size: 18px;
         color: rgb(178, 178, 178);
@@ -45,6 +37,27 @@
           // background-color: lightgray;
         }
       }
+      &-text {
+        // margin: 25px;
+        border-radius: 10px;
+        background-color: rgb(239, 245, 248);
+        box-shadow:10rpx 10rpx 5rpx -2rpx lightgrey;
+        // background-color: rgb(176, 228, 111);
+        // background-color: rgb(255, 255, 255);
+        padding: 15px;
+        // padding-bottom: 25px;
+        width: 65%;
+        // width: 80%;
+        text {
+
+        }
+      }
+      &-image {
+        image {
+          border-radius: 10px;
+          width: 60%;
+        }
+      }
     }
   }
   &-input {
@@ -55,20 +68,30 @@
     background-color: lavender;
     align-items: center;
     &-content {
-      margin: 10px;
-      margin-left: 30px;
-      width: 560px;
-      font-size: 30px;
-      line-height: 32px;
-      height: 60px;
+      border-radius: 10px;
+      width:560px;
+      font-size:30px;
+      line-height:60px;
+      height:60px;
       border:1px solid lavender;
       background:white;
+      padding:5px;
+      margin:10px;
     }
     &-btn {
-      margin-left: 16px;
+      &-image {
+        padding-top: 15px;
+        margin-right:10px;
+        margin-left:20px;
+      }
+      &-send {
+        padding-top: 15px;
+        margin-left:10px;
+      }
       button {
         height: 60px;
         width: 60px;
+        box-sizing: border-box;
         border-radius: 50%;
         background-color: lavenderblush !important;
         border: 1px solid lavenderblush !important;

@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Image, Text } from '@tarojs/components'
 // import { connect } from '@tarojs/redux'
 // import { add, minus, asyncAdd } from '../../actions/counter'
 
@@ -116,15 +116,33 @@ class Index extends Component {
   render () {
     return (
       <View className='page'>
-        <View class='page__bd page__bd_spacing'>
-          <View Taro-if='{{canIUse}}' onClick={this.handleClick} open-type='getUserInfo'>
+        <View className='page-wrap'>
+          <View className='page-wrap-avatar'>
+            <Image 
+              data-src='https://cloud-minapp-22468.cloud.ifanrusercontent.com/1gZSU8ut5ibtlR1m.png' 
+              src='https://cloud-minapp-22468.cloud.ifanrusercontent.com/1gZSU8ut5ibtlR1m.png'
+            ></Image>
+          </View>
+          <View className='page-wrap-text'>
+            <View>我是你的私人助理小P</View>
+            <View>有什么想吐槽的跟我说吧~</View>
+          </View>
+          <View Taro-if='{{canIUse}}' 
+            onClick={this.handleClick} 
+            open-type='getUserInfo'
+            className='page-wrap-home'
+          >
             <wux-button 
               loading={this.state.loading}
               block 
               type='royal'
             >小情绪</wux-button>
           </View>
-          <View Taro-if='{{canIUse}}' onClick={this.handleClickLong} open-type='getUserInfo'>
+          <View Taro-if='{{canIUse}}' 
+            onClick={this.handleClickLong} 
+            open-type='getUserInfo'
+            className='page-wrap-long'
+          >
             <wux-button 
               loading={this.state.loading}
               block 
