@@ -455,7 +455,7 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告
+              更新公告【版本1.2.9】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
@@ -466,6 +466,9 @@ class Home extends Component {
               </View>
               <View className='modal-content-text'>
                 【样式】消息框增加阴影立体感
+              </View>
+              <View className='modal-content-text'>
+                【通知】更新公告增加版本号
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
