@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Textarea, Button, Image } from '@tarojs/components'
+import { View, ScrollView, Text, Textarea, Button, Image, OpenData, Template } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
-import { $wuxDialog } from '../../lib/dialog/index'
+import { $wuxToast } from '../../lib/toast/index'
 import './index.scss'
 import '../../lib/styles/index.wxss';
 
@@ -15,7 +15,8 @@ class Home extends Component {
       "wux-spin": "../../lib/spin/index",
       "wux-button": "../../lib/button/index",
       "wux-card": "../../lib/card/index",
-      "wux-wing-blank": "../../lib/wing-blank/index"
+      "wux-wing-blank": "../../lib/wing-blank/index",
+      // "wux-toast": "../../lib/toast/index"
       // "wux-dialog": "../../lib/dialog/index"
     }
     // enablePullDownRefresh: true
@@ -39,6 +40,9 @@ class Home extends Component {
       modal: 'hide',
       shadow: 'hide',
     }
+  }
+
+  componentWillMount () {
   }
 
   componentDidMount () {
@@ -84,20 +88,29 @@ class Home extends Component {
         Taro.stopPullDownRefresh();  
         Taro.hideNavigationBarLoading();  
         console.info('下拉数据加载完成.');  
-        Taro.showToast({
-          title: '叮叮盯盯',
-          icon: 'none',
-          duration: 2000
-        })
-        this.setState({
-          posts: res.data.objects,
-          scrollTop: 1000 * (res.data.objects.length)
-        });
-        res.data.objects.forEach(element => {
-          if (element.type && element.type === 'image') {
-            self.state.imageList.push(element.content);
-          }
-        });
+        const len = res.data.objects.length
+        if (len < 1) {
+          Taro.showToast({
+            title: '快去写下第一条内容吧~',
+            icon: 'none',
+            duration: 2000
+          })
+        } else {
+          Taro.showToast({
+            title: '叮叮盯盯',
+            icon: 'none',
+            duration: 2000
+          })
+          this.setState({
+            posts: res.data.objects,
+            scrollTop: 1000 * (res.data.objects.length)
+          });
+          res.data.objects.forEach(element => {
+            if (element.type && element.type === 'image') {
+              self.state.imageList.push(element.content);
+            }
+          });
+        }
       }
     }, err => {
       console.log('err: ' + err)
@@ -111,20 +124,9 @@ class Home extends Component {
     const self = this;
     Taro.showNavigationBarLoading();  
     // 显示 loading 提示框,在 ios 系统下，会导致顶部的加载的三个点看不见  
-    // wx.showLoading({  
-    //   title: '数据加载中...',  
-    // });  
     setTimeout(function() {  
       self.handleList();  
     }, 1000);  
-    // Taro.startPullDownRefresh(params).then(res => {
-    //   Taro.showToast({
-    //     title: '刷新成功',
-    //     icon: 'none',
-    //     duration: 2000
-    //   })
-    // }, err => {
-    // });
   }
 
   componentWillReceiveProps (nextProps) {
@@ -355,24 +357,7 @@ class Home extends Component {
       modal: 'modal',
       shadow: 'shadow'
     })
-    // Taro.showModal({
-    //   title: '更新通告',
-    //   content: '【首页】静默获取登录信息\n【样式】首页按钮及主页面输入框样式调整\n【加载】增加数据加载中样式\n'+
-    //   '【格式】情绪分析结果表情换行显示',
-    //   confirmText: '好的',
-    //   showCancel: false,
-    //   success(successRes) {
-    //     if (successRes.confirm) {
-          
-    //     } 
-    //   }
-    // })
   }
-
-  // handleFocus (e) {
-  //   // 获取键盘高度
-  //   const height = e.detail.height;
-  // }
 
   hideModal () {
     this.setState({
@@ -391,14 +376,19 @@ class Home extends Component {
           <View className='home-list-item-view-time'>
             <Text>{showTime}</Text>
           </View>
-          <View className='home-list-item-view home-list-item-view-image' key={index}>
-            <Image 
-              onClick={this.previewImage}
-              // 宽度不变，高度自动变化，保持原图宽高比不变
-              mode='widthFix' 
-              data-src={item.content}
-              src={item.content}
-            ></Image>
+          <View className='home-list-item-view-wrap' key={index}>
+            <View className='home-list-item-view-wrap-avatar'>
+              <OpenData type='userAvatarUrl' />
+            </View>
+            <View className='home-list-item-view-image' key={index}>
+              <Image 
+                onClick={this.previewImage}
+                // 宽度不变，高度自动变化，保持原图宽高比不变
+                mode='widthFix' 
+                data-src={item.content}
+                src={item.content}
+              ></Image>
+            </View>
           </View>
         </View>
         :
@@ -406,8 +396,13 @@ class Home extends Component {
           <View className='home-list-item-view-time'>
             <Text>{showTime}</Text>
           </View>
-          <View className='home-list-item-view-text' key={index}>
-            <Text>{item.content}</Text>
+          <View className='home-list-item-view-wrap'>
+            <View className='home-list-item-view-wrap-avatar'>
+              <OpenData type='userAvatarUrl' />
+            </View>
+            <View className='home-list-item-view-text' key={index}>
+              <Text>{item.content}</Text>
+            </View>
           </View>
         </View>
       )
@@ -455,20 +450,20 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.2.9】
+              更新公告【版本1.3.0】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【首页】首页重新布局  
+                【首页】增加授权弹框和问候
               </View>
               <View className='modal-content-text'>
-                【配色】消息配色方案改变
+                【体验】增加用户头像显示
               </View>
               <View className='modal-content-text'>
-                【样式】消息框增加阴影立体感
+                【布局】内容页布局微调
               </View>
               <View className='modal-content-text'>
-                【通知】更新公告增加版本号
+                【优化】新用户进入首页提示
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>

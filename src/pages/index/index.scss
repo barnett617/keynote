@@ -31,9 +31,18 @@
     }
     &-home {
       width: 100%;
+      margin-bottom:30rpx;
+      button {
+        background-color: rgb(43, 141, 226);
+        color: white;
+      }
     }
     &-long {
       width: 100%;
+      button {
+        background-color: rgb(43, 141, 226);
+        color: white;
+      }
     }
   }
 }

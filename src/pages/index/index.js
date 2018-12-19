@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Text } from '@tarojs/components'
+import { View, Image, Button, OpenData } from '@tarojs/components'
 // import { connect } from '@tarojs/redux'
 // import { add, minus, asyncAdd } from '../../actions/counter'
 
@@ -23,9 +23,9 @@ class Index extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      canIUse: Taro.canIUse('Button.open-type.getUserInfo'),
-      loading: false
+      canIUse: Taro.canIUse('Button.openType.getUserInfo'),
     }
+    this.env = process.env.TARO_ENV
   }
 
   config = {
@@ -33,12 +33,12 @@ class Index extends Component {
     "usingComponents": {
       "wux-icon": "../../lib/icon/index",
       "wux-button": "../../lib/button/index"
-    }
+    },
+    disableScroll: true
   }
 
+  // 对应微信onLoad方法
   componentWillMount () {
-    // 进入首页时异步获取用户信息
-    this.getSetting();
   }
 
   componentDidMount () {
@@ -55,62 +55,31 @@ class Index extends Component {
 
   componentDidHide () { }
 
-  handleClick = () => {
-    if (this.state.canIUse) {
-      Taro.navigateTo({
-        url: '/pages/home/index'
-      })
-    } else {
+  bindGetUserInfo (res) {
+    if(res.detail.userInfo) {
       Taro.showToast({
-        title: '正在识别你的身份，稍等哦~',
-        icon: 'none',
+        title: 'HI,' + res.detail.userInfo.nickName,
+        icon: 'success',
         duration: 2000
       })
+      setTimeout(() => {
+        Taro.navigateTo({
+          url: '/pages/home/index'
+        })
+      }, 1000);
+    }else {
+      console.log('用户点击了取消按钮')
     }
   }
 
-  handleClickLong = () => {
-    if (this.state.canIUse) {
+  bindGetUserInfoLong (res) {
+    if(res.detail.userInfo) {
       Taro.navigateTo({
         url: '/pages/long/index'
       })
-    } else {
-      Taro.showToast({
-        title: '正在读取信息，请稍等~',
-        icon: 'none',
-        duration: 2000
-      })
+    }else {
+      console.log('用户点击了取消按钮')
     }
-  }
-
-  getSetting() {
-    const self = this;
-    self.setState({
-      loading: true
-    });
-    Taro.getSetting({
-      success (settingRes){
-        if (settingRes.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          Taro.getUserInfo({
-            success: function(userinfoRes) {
-              self.setState({
-                loading: false,
-                canIUse: true
-              });
-              console.log('userInfo: ' + JSON.stringify(userinfoRes.userInfo));
-            }
-          })
-        }
-      }
-    })
-  }
-
-  bindGetUserInfo (e) {
-    console.log(e.detail.userInfo)
-    Taro.navigateTo({
-      url: '/pages/home/index'
-    })
   }
 
   render () {
@@ -128,26 +97,26 @@ class Index extends Component {
             <View>有什么想吐槽的跟我说吧~</View>
           </View>
           <View Taro-if='{{canIUse}}' 
-            onClick={this.handleClick} 
-            open-type='getUserInfo'
             className='page-wrap-home'
           >
-            <wux-button 
-              loading={this.state.loading}
+            <Button 
               block 
               type='royal'
-            >小情绪</wux-button>
+              Taro-if={this.state.canIUse}
+              openType='getUserInfo'
+              onGetUserInfo={this.bindGetUserInfo}
+            >小情绪</Button>
           </View>
           <View Taro-if='{{canIUse}}' 
-            onClick={this.handleClickLong} 
-            open-type='getUserInfo'
             className='page-wrap-long'
           >
-            <wux-button 
-              loading={this.state.loading}
+            <Button
               block 
               type='positive'
-            >长篇大论</wux-button>
+              Taro-if={this.state.canIUse}
+              openType='getUserInfo'
+              onGetUserInfo={this.bindGetUserInfoLong}
+            >长篇大论</Button>
           </View>
         </View>
       </View>

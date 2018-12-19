@@ -26,3 +26,5 @@
 - [小程序API](https://developers.weixin.qq.com/miniprogram/dev/api/)
 - [知晓云文档](https://doc.minapp.com/)
 - [知晓云控制台](https://cloud.minapp.com/dashboard/#/)
+- [小程序后台配置](https://mp.weixin.qq.com/wxopen/authprofile?action=index&use_role=1&token=1667199367&lang=zh_CN)
+- [wux-ui](https://wux-weapp.github.io/wux-weapp-docs/#/quickstart)
