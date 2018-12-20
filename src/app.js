@@ -29,7 +29,7 @@ class App extends Component {
     },
     plugins: {
       sdkPlugin: {
-        "version": "1.10.0",
+        "version": "1.13.0",
         "provider": "wxc6b86e382a1e3294"
       }
     }

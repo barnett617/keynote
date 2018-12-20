@@ -187,24 +187,24 @@ class Home extends Component {
       title: '情绪分析中',
     })
     Taro.request({
-      url: 'http://101.132.174.1:8082/analysis/',
+      url: 'https://www.frontend.wang',
+      // url: 'http://101.132.174.1:8082/analysis/',
       method: 'POST',
       data: {
-        sentence: self.state.content,
+        "content": self.state.content,
       },
       header: {
-        'content-type': 'application/json'
+        'content-type': 'application/x-www-form-urlencoded'
       }
     }).then(res => {
       Taro.hideLoading()
-      console.log('res: ' + JSON.stringify(res))
-      console.log('res.data.data: ' + JSON.stringify(res.data.data))
-      res.data.data.forEach(element => {
+      const data = res.data.package.data;
+      data.forEach(element => {
         result += (element + ' ')
       });
-      if (res && +res.code === 200) {
+      if (res && +res.data.status === 200) {
         self.setState({
-          analysisResult: res.data.data
+          analysisResult: data
         })
       }
       Taro.showModal({
@@ -450,20 +450,11 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.0】
+              更新公告【版本1.3.1】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【首页】增加授权弹框和问候
-              </View>
-              <View className='modal-content-text'>
-                【体验】增加用户头像显示
-              </View>
-              <View className='modal-content-text'>
-                【布局】内容页布局微调
-              </View>
-              <View className='modal-content-text'>
-                【优化】新用户进入首页提示
+                【功能】体验版正式集成情绪分析功能
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
