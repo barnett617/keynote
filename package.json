@@ -31,6 +31,7 @@
     "taro-ui": "^1.5.0"
   },
   "devDependencies": {
+    "@tarojs/cli": "1.1.9",
     "@tarojs/plugin-babel": "^1.1.9",
     "@tarojs/plugin-csso": "^1.0.7",
     "@tarojs/plugin-sass": "^1.0.7",
