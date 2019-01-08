@@ -1,5 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Button, OpenData } from '@tarojs/components'
+import StartImg from '../../assets/images/start.jpg'
+
 // import { connect } from '@tarojs/redux'
 // import { add, minus, asyncAdd } from '../../actions/counter'
 
@@ -39,6 +41,14 @@ class Index extends Component {
 
   // 对应微信onLoad方法
   componentWillMount () {
+    Taro.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: '#010606',
+      animation: {
+        duration: 400,
+        timingFunc: 'easeIn'
+      }
+    })
   }
 
   componentDidMount () {
@@ -85,40 +95,16 @@ class Index extends Component {
   render () {
     return (
       <View className='page'>
-        <View className='page-wrap'>
-          <View className='page-wrap-avatar'>
-            <Image 
-              data-src='https://cloud-minapp-22468.cloud.ifanrusercontent.com/1gZSU8ut5ibtlR1m.png' 
-              src='https://cloud-minapp-22468.cloud.ifanrusercontent.com/1gZSU8ut5ibtlR1m.png'
-            ></Image>
-          </View>
-          <View className='page-wrap-text'>
-            <View>我是你的私人助理小P</View>
-            <View>有什么想吐槽的跟我说吧~</View>
-          </View>
-          <View Taro-if='{{canIUse}}' 
-            className='page-wrap-home'
-          >
-            <Button 
-              block 
-              type='royal'
-              Taro-if={this.state.canIUse}
-              openType='getUserInfo'
-              onGetUserInfo={this.bindGetUserInfo}
-            >小情绪</Button>
-          </View>
-          <View Taro-if='{{canIUse}}' 
-            className='page-wrap-long'
-          >
-            <Button
-              block 
-              type='positive'
-              Taro-if={this.state.canIUse}
-              openType='getUserInfo'
-              onGetUserInfo={this.bindGetUserInfoLong}
-            >长篇大论</Button>
-          </View>
+        <View className='page-img'>
+          <Image src={StartImg} data-src={StartImg}></Image>
         </View>
+        <Button 
+          block 
+          type='royal'
+          Taro-if={this.state.canIUse}
+          openType='getUserInfo'
+          onGetUserInfo={this.bindGetUserInfo}
+        >进入PickMe</Button>
       </View>
     )
   }

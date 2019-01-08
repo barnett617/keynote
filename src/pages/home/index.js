@@ -1,7 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Textarea, Button, Image, OpenData, Template } from '@tarojs/components'
+import { View, ScrollView, Text, Textarea, Image, OpenData } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
-import { $wuxToast } from '../../lib/toast/index'
 import './index.scss'
 import '../../lib/styles/index.wxss';
 
@@ -9,17 +8,19 @@ class Home extends Component {
 
   config = {
     navigationBarTitleText: 'PickMee',
-    "usingComponents": {
-      "wux-icon": "../../lib/icon/index",
-      "wux-notice-bar": "../../lib/notice-bar/index",
-      "wux-spin": "../../lib/spin/index",
-      "wux-button": "../../lib/button/index",
-      "wux-card": "../../lib/card/index",
-      "wux-wing-blank": "../../lib/wing-blank/index",
-      // "wux-toast": "../../lib/toast/index"
-      // "wux-dialog": "../../lib/dialog/index"
+    'usingComponents': {
+      'wux-icon': '../../lib/icon/index',
+      'wux-notice-bar': '../../lib/notice-bar/index',
+      'wux-spin': '../../lib/spin/index',
+      'wux-button': '../../lib/button/index',
+      'wux-card': '../../lib/card/index',
+      'wux-wing-blank': '../../lib/wing-blank/index',
+      // tab
+      'wux-icon': '../../lib/icon/index',
+      'wux-badge': '../../lib/badge/index',
+      'wux-tabbar': '../../lib/tabbar/index',
+      'wux-tabbar-item': '../../lib/tabbar-item/index',
     }
-    // enablePullDownRefresh: true
   }
 
   constructor(props) {
@@ -34,19 +35,24 @@ class Home extends Component {
       imageList: [],
       // 用户唯一标示
       openId: '',
+      // 情绪分析结果
       analysisResult: [],
-      spinning: false,
+      // 更新通告
       notice: '',
       modal: 'hide',
       shadow: 'hide',
+      currentTab: 'tab1',
+      currentPage: 0,
+      pageSize: 20,
     }
   }
 
   componentWillMount () {
+    this.handleLogin();
   }
 
   componentDidMount () {
-    this.handleLogin();
+    this.handleList(this.state.openid)
   }
 
   /**
@@ -55,17 +61,18 @@ class Home extends Component {
    */
   handleLogin () {
     const self = this;
+    Taro.showNavigationBarLoading();  
     Taro.BaaS.login(false).then(res => {
       self.setState({
         openId: res.openid,
-        spinning: true
       });
-      setTimeout(function () {
-        self.handleList(res.openid)
-      }, 3000)
     }, err => {
       // 登录失败
-      console.log('err: ' + err);
+      Taro.showToast({
+        title: '登录失败，未获取到用户信息~',
+        icon: 'none',
+        duration: 2000
+      })
     })
   }
 
@@ -73,47 +80,40 @@ class Home extends Component {
    * 查询消息列表
    */
   handleList = (openId) => {
-    const self = this;
     // 用户唯一标识
-    const id = openId ? openId : self.state.openId;
+    const id = openId ? openId : this.state.openId;
     let tableID = 58649
     let TableObj = new Taro.BaaS.TableObject(tableID)
     var query = new Taro.BaaS.Query()
     query.compare('userUniformId', '=', id);
-    TableObj.setQuery(query).limit(1000).find().then(res => {
-      self.setState({
-        spinning: false
-      });
+    
+    TableObj.setQuery(query).limit(this.state.pageSize).offset(this.state.currentPage).orderBy('-created_at').find().then(res => {
+      Taro.hideNavigationBarLoading();  
       if (res.statusCode === 200) {
-        Taro.stopPullDownRefresh();  
-        Taro.hideNavigationBarLoading();  
-        console.info('下拉数据加载完成.');  
-        const len = res.data.objects.length
-        if (len < 1) {
-          Taro.showToast({
-            title: '快去写下第一条内容吧~',
-            icon: 'none',
-            duration: 2000
-          })
-        } else {
-          Taro.showToast({
-            title: '叮叮盯盯',
-            icon: 'none',
-            duration: 2000
-          })
-          this.setState({
-            posts: res.data.objects,
-            scrollTop: 1000 * (res.data.objects.length)
-          });
-          res.data.objects.forEach(element => {
-            if (element.type && element.type === 'image') {
-              self.state.imageList.push(element.content);
-            }
-          });
+        const data = res.data.objects
+        // 查询的最后十条倒序排正
+        let arr = new Array(data.length)
+        for (let i = 0; i < data.length; i++) {
+          arr[data.length - 1 - i] = data[i]
         }
+        this.setState({
+          posts: arr.concat(this.state.posts),
+          scrollTop: 1000 * (res.data.objects.length),
+          currentPage: res.data.meta.offset + this.state.pageSize,
+        });
+        // 初始化预览图片列表
+        res.data.objects.forEach(element => {
+          if (element.type && element.type === 'image') {
+            this.state.imageList.push(element.content);
+          }
+        });
       }
     }, err => {
-      console.log('err: ' + err)
+      Taro.showToast({
+        title: '服务错误~',
+        icon: 'none',
+        duration: 2000
+      })
     })
   }
 
@@ -122,6 +122,7 @@ class Home extends Component {
    */
   onPullDownRefresh () {
     const self = this;
+    console.log('下拉触发')
     Taro.showNavigationBarLoading();  
     // 显示 loading 提示框,在 ios 系统下，会导致顶部的加载的三个点看不见  
     setTimeout(function() {  
@@ -152,7 +153,7 @@ class Home extends Component {
     }
     const params = {
       content: self.state.content,
-      type: self.state.type,
+      type: this.state.type,
       userUniformId: self.state.openId
     }
     let tableID = 58649
@@ -174,10 +175,17 @@ class Home extends Component {
         self.handleList();
       }
     }, err => {
-      console.log('err: ' + err)
+      Taro.showToast({
+        title: '发送失败',
+        icon: 'none',
+        duration: 2000
+      })
     })
   }
 
+  /**
+   * 情绪分析
+   */
   analysis () {
     const self = this;
     let result = '';
@@ -191,7 +199,7 @@ class Home extends Component {
       // url: 'http://101.132.174.1:8082/analysis/',
       method: 'POST',
       data: {
-        "content": self.state.content,
+        'content': self.state.content,
       },
       header: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -213,25 +221,25 @@ class Home extends Component {
         confirmText: '对的！',
         cancelText: '不对~',
         success(successRes) {
-          if (successRes.confirm) {
-            Taro.showToast({
-              title: '你点击了对的！',
-              icon: 'success',
-              duration: 2000
-            })
-          } else if (successRes.cancel) {
-            Taro.showToast({
-              title: '你点击了不对~',
-              icon: 'success',
-              duration: 2000
-            })
-          }
+          // if (successRes.confirm) {
+          //   Taro.showToast({
+          //     title: '你点击了对的！',
+          //     icon: 'success',
+          //     duration: 2000
+          //   })
+          // } else if (successRes.cancel) {
+          //   Taro.showToast({
+          //     title: '你点击了不对~',
+          //     icon: 'success',
+          //     duration: 2000
+          //   })
+          // }
         }
       })
     }, err => {
       Taro.hideLoading()
       Taro.showToast({
-        title: '分析失败~',
+        title: '分析系统坏掉了哦~',
         icon: 'none',
         duration: 2000
       })
@@ -255,8 +263,8 @@ class Home extends Component {
 
   onScrolltoupper = (e) => {
     console.log('滚动到顶部发生onScrolltoupper')
-    console.log('scrollHeight: ' + e.target.scrollHeight)
-    console.log('scrollTop: ' + e.target.scrollTop)
+    Taro.showNavigationBarLoading();  
+    this.handleList();  
   }
 
   onScroll = (e) => {
@@ -366,6 +374,12 @@ class Home extends Component {
     })
   }
 
+  changeTab(e) {
+    this.setState({
+      currentTab: e.detail.key,
+    })
+  }
+
   render () {
     const postList = this.state.posts.map((item, index) => {
       const showTime = dateFormat.common(item.created_at)
@@ -408,7 +422,6 @@ class Home extends Component {
       )
     });
     return (
-      <wux-spin className='spin' nested='true' spinning={this.state.spinning} tip='内容正在狂奔而来！别急~'>
         <View className='home'>
           <View className={this.state.notice} onClick={this.showNotice}>
             <wux-notice-bar
@@ -450,19 +463,32 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.1】
+              更新公告【版本1.3.2】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【功能】体验版正式集成情绪分析功能
+                【优化】首页改版
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
               好的
             </View>
           </View>
+          {/* <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
+            <wux-tabbar-item key='tab1' title='情绪'>
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
+            </wux-tabbar-item>
+            <wux-tabbar-item key='tab2' title='长篇'>
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
+            </wux-tabbar-item>
+            <wux-tabbar-item key='tab3' title='关于'>
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
+                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
+            </wux-tabbar-item>
+          </wux-tabbar> */}
         </View>
-      </wux-spin>
     )
   }
 }
