@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Button, OpenData } from '@tarojs/components'
-import StartImg from '../../assets/images/start.jpg'
+import StartImg from '../../assets/images/start1.jpeg'
 
 // import { connect } from '@tarojs/redux'
 // import { add, minus, asyncAdd } from '../../actions/counter'
@@ -31,7 +31,7 @@ class Index extends Component {
   }
 
   config = {
-    navigationBarTitleText: 'PickMee',
+    navigationBarTitleText: '',
     "usingComponents": {
       "wux-icon": "../../lib/icon/index",
       "wux-button": "../../lib/button/index"
@@ -43,7 +43,7 @@ class Index extends Component {
   componentWillMount () {
     Taro.setNavigationBarColor({
       frontColor: '#000000',
-      backgroundColor: '#010606',
+      backgroundColor: '#FCFCFC',
       animation: {
         duration: 400,
         timingFunc: 'easeIn'

@@ -463,11 +463,11 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.2】
+              更新公告【版本1.3.3】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【优化】首页改版
+                【优化】首页替换背景图
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
