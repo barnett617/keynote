@@ -1,34 +1,11 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Textarea, Image, OpenData } from '@tarojs/components'
+import { View, ScrollView, Text, Textarea, Image, OpenData, Button } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
 import './index.scss'
 import '../../lib/styles/index.wxss';
-
-const icon = 'data:image/png;base64,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'
-const buttons = [
-  // {
-  //   openType: 'getUserInfo',
-  //   label: 'GetUserInfo',
-  //   icon,
-  // },
-  {
-    openType: 'share',
-    label: '分享',
-    icon,
-  },
-  {
-    openType: 'contact',
-    label: '客服',
-    icon
-    // icon: '<ion-icon name="contacts"></ion-icon>',
-  },
-  // {
-  //   label: 'View on Demo',
-  //   icon,
-  // },
-]
-
-
+import camera from '../../assets/images/_ionicons_svg_md-camera.svg';
+import mic from '../../assets/images/_ionicons_svg_ios-mic.svg';
+import pic from '../../assets/images/_ionicons_svg_md-images.svg';
 
 class Home extends Component {
 
@@ -51,7 +28,15 @@ class Home extends Component {
       // input
       "wux-cell-group": "../../lib/cell-group/index",
       "wux-cell": "../../lib/cell/index",
-      "wux-input": "../../lib/input/index"
+      "wux-input": "../../lib/input/index",
+      // popup
+      "wux-button": "../../lib/button/index",
+      "wux-popup": "../../lib/popup/index",
+      // grid
+      "wux-icon": "../../lib/icon/index",
+      "wux-grids": "../../lib/grids/index",
+      "wux-grid": "../../lib/grid/index",
+      "wux-search-bar": "../../lib/search-bar/index",
     }
   }
 
@@ -86,6 +71,10 @@ class Home extends Component {
       sAngle: 0,
       eAngle: 360,
       spaceBetween: 10,
+      popupShow: false,
+      searchValue: '',
+      showSearch: '',
+      scrollSearch: true,
     }
   }
 
@@ -137,9 +126,9 @@ class Home extends Component {
     let TableObj = new Taro.BaaS.TableObject(tableID)
     var query = new Taro.BaaS.Query()
     query.compare('userUniformId', '=', id);
-    
+    this.showLoad()
     TableObj.setQuery(query).limit(this.state.pageSize).offset(this.state.currentPage).orderBy('-created_at').find().then(res => {
-      Taro.hideNavigationBarLoading();  
+      this.hideLoad() 
       if (res.statusCode === 200) {
         const data = res.data.objects
         // 查询的最后十条倒序排正
@@ -290,22 +279,41 @@ class Home extends Component {
    * 滚动到顶部发生
    */
   onScrolltoupper = (e) => {
-    Taro.showNavigationBarLoading();  
-    this.handleList();  
+    if (this.state.scrollSearch) {
+      Taro.showNavigationBarLoading();  
+      this.handleList();  
+    }
   }
 
   /**
    * 滑动监听
    */
   onScroll = (e) => {
+    // 上滑隐藏搜索框
+    if (e.target.deltaY < 0) {
+      this.setState({
+        showSearch: 'hide'
+      })
+    } else {
+      this.setState({
+        showSearch: ''
+      })
+    }
   }
 
   /**
    * 发送图片
    */
-  uploadImage = () => {
+  uploadImage = (type) => {
     const self = this;
+    let sourceType = []
+    if (type === 'image') {
+      sourceType.push('album')
+    } else if (type === 'camera') {
+      sourceType.push('camera')
+    }
     Taro.chooseImage({
+      sourceType: sourceType,
       success: (res) => {
         if (res) {
           let MyFile = new Taro.BaaS.File()
@@ -397,7 +405,7 @@ class Home extends Component {
     })
   }
 
-  hideModal () {
+  hideNotice () {
     this.setState({
       modal: 'hide',
       shadow: 'hide'
@@ -411,12 +419,13 @@ class Home extends Component {
   }
 
   // 浮动按钮
-  changeFab() {
-
+  changeFab(e) {
   }
 
-  clickFab() {
-
+  clickFab(e) {
+    if (e.target.index === 2) {
+      this.showNotice()
+    }
   }
 
   contactFab(e) {
@@ -427,7 +436,104 @@ class Home extends Component {
     console.log('onGotUserInfo', e)
   }
 
+  showPopup() {
+    this.setState({
+      popupShow: true,
+    })
+  }
+
+  closePop() {
+    this.setState({
+      popupShow: false,
+    })
+  }
+
+  clickNotice(e) {
+  }
+
+  searchChange(e) {
+
+  }
+
+  searchFocus(e) {
+
+  }
+
+  searchBlue(e) {
+
+  }
+
+  searchConfirm(e) {
+    const id = this.state.openId;
+    let tableID = 58649
+    let TableObj = new Taro.BaaS.TableObject(tableID)
+    var query = new Taro.BaaS.Query()
+    query.compare('userUniformId', '=', id);
+    query.contains('content', e.target.value);
+    this.showLoad()
+    TableObj.setQuery(query).find().then(res => {
+      this.hideLoad()
+      if (res.statusCode === 200) {
+        const data = res.data.objects
+        this.setState({
+          posts: data,
+          scrollTop: 1000 * (data.length),
+          scrollSearch: false
+        });
+      }
+    }, err => {
+      Taro.showToast({
+        title: '服务错误~',
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  }
+
+  searchClear(e) {
+
+  }
+
+  searchCancel(e) {
+    this.setState({
+      scrollSearch: true
+    })
+    this.handleList();
+  }
+
   render () {
+
+    const icon = 'data:image/png;base64,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'
+    const buttons = [
+      // {
+      //   openType: 'getUserInfo',
+      //   label: 'GetUserInfo',
+      //   icon,
+      // },
+      {
+        openType: 'share',
+        label: '分享',
+        icon,
+      },
+      {
+        openType: 'contact',
+        label: '客服',
+        icon
+        // icon: '<ion-icon name="contacts"></ion-icon>',
+      },
+      {
+        // openType: 'contact',
+        action: this.clickNotice,
+        label: '通告',
+        icon
+        // icon: '<ion-icon name="contacts"></ion-icon>',
+      },
+      // {
+      //   label: 'View on Demo',
+      //   icon,
+      // },
+    ]
+
     const postList = this.state.posts.map((item, index) => {
       const showTime = dateFormat.common(item.created_at)
       return (
@@ -470,12 +576,20 @@ class Home extends Component {
     });
     return (
         <View className='home'>
-          <View className={this.state.notice} onClick={this.showNotice}>
-            <wux-notice-bar
-              content='有新功能更新哦~，点击查看'
-              mode='closable'
-            >
-            </wux-notice-bar>
+          <View className={this.state.showSearch}>
+            <wux-search-bar 
+              clear 
+              show-cancel 
+              value={this.state.searchValue}
+              controlled 
+              placeholder='搜索' 
+              onchange={this.searchChange}
+              onfocus={this.searchFocus}
+              onblur={this.searchBlue} 
+              onconfirm={this.searchConfirm} 
+              onclear={this.searchClear}
+              oncancel={this.searchCancel}
+            />
           </View>
           <ScrollView
             className='home-scrollview'
@@ -490,9 +604,6 @@ class Home extends Component {
             { postList }
           </ScrollView>
           <View id='home-input' className='home-input'>
-              <View onClick={this.uploadImage} className='home-input-btn-image'>
-                <wux-icon size='28' color='#999999' type='md-images' />
-              </View>
               <View className='home-input-box'>
                 <wux-cell hover-class='none'>
                   <wux-input 
@@ -506,28 +617,28 @@ class Home extends Component {
                   />
                 </wux-cell>
               </View>
-              <View onClick={this.handleConfirm.bind(this)} className='home-input-btn-send'>
-                <wux-icon size='28' color='#999999' type='md-paper-plane' />
+              <View onClick={this.showPopup} className='home-input-btn-send'>
+                <wux-icon type='ios-add-circle-outline' />
               </View>
           </View>
           <View className={this.state.shadow}>
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.5】
+              更新公告【版本1.3.6】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【UI】UI改版
+                【界面】顶部通知栏移入浮动按钮
               </View>
               <View className='modal-content-text'>
-                【优化】减少提示弹框
+                【新功能】增加内容模糊搜索
               </View>
               <View className='modal-content-text'>
-                【新功能 增加客服咨询
+                【排版】输入框布局重排
               </View>
             </View>
-            <View onClick={this.hideModal} className='modal-btn'>
+            <View onClick={this.hideNotice} className='modal-btn'>
               好的
             </View>
           </View>
@@ -540,11 +651,31 @@ class Home extends Component {
             sAngle={this.state.sAngle} 
             eAngle={this.state.eAngle}
             buttons={buttons}
-            onChange={this.changeFab}
-            onClick={this.clickFab}
-            onContact={this.contactFab}
-            onGetuserinfo={this.onGotUserInfo}
+            onchange={this.changeFab}
+            onclick={this.clickFab}
+            oncontact={this.contactFab}
+            oncetuserinfo={this.onGotUserInfo}
           />
+          <wux-popup position='bottom' maskClosable visible={this.state.popupShow} onclose={this.closePop}>
+            <wux-grids>
+              <wux-grid onclick={this.uploadImage.bind(this, 'image')} thumb={pic} label='照片' />
+              <wux-grid thumb={mic} label='语音输入' />
+              <wux-grid onclick={this.uploadImage.bind(this, 'camera')} thumb={camera} label='拍摄' />
+              {/* <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
+              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
+              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
+              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
+              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
+              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' /> */}
+            </wux-grids>
+            {/* <wux-cell-group title='Your fathers'>
+                <wux-cell hover-class='none' title='Jack Ma'></wux-cell>
+                <wux-cell hover-class='none' title='Pony'></wux-cell>
+                <wux-cell hover-class='none'>
+                    <wux-button block type='balanced' onClick={this.click}>Yes</wux-button>
+                </wux-cell>
+            </wux-cell-group> */}
+          </wux-popup>
           {/* <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
             <wux-tabbar-item key='tab1' title='情绪'>
                 <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />

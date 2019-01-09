@@ -91,7 +91,7 @@
       }
       &-send {
         padding-top: 15px;
-        margin-left:10px;
+        margin: 0 20rpx;
       }
       button {
         height: 60px;
@@ -104,7 +104,7 @@
     }
     &-box {
       padding: 10rpx;
-      width: 550rpx;
+      flex-grow: 1;
     }
   }
 }
@@ -155,5 +155,8 @@
   display: none;
 }
 .wux-fab-button--bottomRight {
-  bottom: 120rpx !important;
+  bottom: 160rpx !important;
+}
+.wux-grids {
+  background-color: rgb(247, 247, 247) !important;
 }
