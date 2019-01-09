@@ -3,7 +3,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(239, 239, 239);
   // background-color: rgb(235, 235, 235);
   &-empty {
     flex-grow: 1;
@@ -14,7 +14,7 @@
   &-scrollview {
     // flex-grow: 1;
     // 使得滑动区域的内容一直处于最新的地方，并自动下滑
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(239, 239, 239);
     height: calc(100vh - 160px);
     // padding-bottom: 180px;
     // overflow-y: scroll;
@@ -50,7 +50,7 @@
       &-text {
         display: flex;
         border-radius: 10px;
-        background-color: rgb(239, 245, 248);
+        background-color: rgb(255, 255, 255);
         box-shadow:10rpx 10rpx 5rpx -2rpx lightgrey;
         padding: 15px;
         width: 65%;
@@ -70,7 +70,7 @@
     bottom: 0;
     width: 100%;
     display: flex;
-    background-color: lavender;
+    background-color: rgb(247, 247, 247);
     align-items: center;
     &-content {
       border-radius: 10px;
@@ -78,7 +78,7 @@
       font-size:30px;
       line-height:60px;
       height:60px;
-      border:1px solid lavender;
+      // border:1px solid lavender;
       background:white;
       padding:5px;
       margin:10px;
@@ -101,6 +101,10 @@
         background-color: lavenderblush !important;
         border: 1px solid lavenderblush !important;
       }
+    }
+    &-box {
+      padding: 10rpx;
+      width: 550rpx;
     }
   }
 }
