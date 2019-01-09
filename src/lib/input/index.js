@@ -1,9 +1,12 @@
-Component({
-	externalClasses: ['wux-class'],
-    options: {
-        multipleSlots: true,
-    },
+import baseComponent from '../helpers/baseComponent'
+import classNames from '../helpers/classNames'
+
+baseComponent({
     properties: {
+        prefixCls: {
+            type: String,
+            value: 'wux-input',
+        },
         label: {
             type: String,
             value: '',
@@ -64,11 +67,6 @@ Component({
         focus: {
             type: Boolean,
             value: false,
-            observer(newVal) {
-                this.setData({
-                    inputFocus: newVal,
-                })
-            },
         },
         confirmType: {
             type: String,
@@ -107,6 +105,32 @@ Component({
         inputValue: '',
         inputFocus: false,
     },
+    computed: {
+        classes() {
+            const { prefixCls, disabled, inputFocus, error: hasError } = this.data
+            const wrap = classNames(prefixCls, {
+                [`${prefixCls}--focus`]: inputFocus,
+                [`${prefixCls}--disabled`]: disabled,
+                [`${prefixCls}--error`]: hasError,
+            })
+            const label = `${prefixCls}__label`
+            const control = `${prefixCls}__control`
+            const item = `${prefixCls}__item`
+            const clear = `${prefixCls}__clear`
+            const error = `${prefixCls}__error`
+            const extra = `${prefixCls}__extra`
+
+            return {
+                wrap,
+                label,
+                control,
+                item,
+                clear,
+                error,
+                extra,
+            }
+        },
+    },
     methods: {
         updated(inputValue) {
             if (this.data.inputValue !== inputValue) {
@@ -120,15 +144,11 @@ Component({
                 this.updated(e.detail.value)
             }
 
-            if (!this.data.inputFocus) {
-                this.setData({
-                    inputFocus: true,
-                })
-            }
-
             this.triggerEvent('change', e.detail)
         },
         onFocus(e) {
+            this.clearTimer()
+
             this.setData({
                 inputFocus: true,
             })
@@ -136,9 +156,7 @@ Component({
             this.triggerEvent('focus', e.detail)
         },
         onBlur(e) {
-            this.setData({
-                inputFocus: false,
-            })
+            this.setTimer()
 
             this.triggerEvent('blur', e.detail)
         },
@@ -150,13 +168,27 @@ Component({
 
             this.setData({
                 inputValue: controlled ? inputValue : '',
-                inputFocus: true,
             })
 
             this.triggerEvent('clear', { value: '' })
         },
         onError() {
             this.triggerEvent('error', { value: this.data.inputValue })
+        },
+        setTimer() {
+            this.clearTimer()
+
+            this.timeout = setTimeout(() => {
+                this.setData({
+                    inputFocus: false,
+                })
+            }, 200)
+        },
+        clearTimer() {
+            if (this.timeout) {
+                clearTimeout(this.timeout)
+                this.timeout = null
+            }
         },
     },
     attached() {

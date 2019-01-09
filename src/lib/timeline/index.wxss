@@ -1,1 +1,3 @@
-.wux-timeline{position:relative}
+.wux-timeline {
+  position: relative
+}

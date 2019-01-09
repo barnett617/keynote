@@ -1,6 +1,12 @@
-Component({
-    externalClasses: ['wux-class'],
+import baseComponent from '../helpers/baseComponent'
+import classNames from '../helpers/classNames'
+
+baseComponent({
     properties: {
+        prefixCls: {
+            type: String,
+            value: 'wux-media',
+        },
         thumb: {
             type: String,
             value: '',
@@ -20,6 +26,28 @@ Component({
         align: {
             type: String,
             value: 'center',
+        },
+    },
+    computed: {
+        classes() {
+            const { prefixCls, align } = this.data
+            const wrap = classNames(prefixCls, {
+                [`${prefixCls}--align-${align}`]: align,
+            })
+            const hd = `${prefixCls}__hd`
+            const thumb = `${prefixCls}__thumb`
+            const bd = `${prefixCls}__bd`
+            const title = `${prefixCls}__title`
+            const desc = `${prefixCls}__desc`
+
+            return {
+                wrap,
+                hd,
+                thumb,
+                bd,
+                title,
+                desc,
+            }
         },
     },
 })

@@ -1,6 +1,12 @@
-Component({
-    externalClasses: ['wux-class'],
+import baseComponent from '../helpers/baseComponent'
+import classNames from '../helpers/classNames'
+
+baseComponent({
     properties: {
+        prefixCls: {
+            type: String,
+            value: 'wux-upload',
+        },
         max: {
             type: Number,
             value: -1,
@@ -83,6 +89,31 @@ Component({
         uploadMax: -1,
         uploadCount: 9,
         uploadFileList: [],
+    },
+    computed: {
+        classes() {
+            const { prefixCls, disabled, listType } = this.data
+            const wrap = classNames(prefixCls, {
+                [`${prefixCls}--${listType}`]: listType,
+                [`${prefixCls}--disabled`]: disabled,
+            })
+            const files = `${prefixCls}__files`
+            const file = `${prefixCls}__file`
+            const thumb = `${prefixCls}__thumb`
+            const remove = `${prefixCls}__remove`
+            const select = `${prefixCls}__select`
+            const button = `${prefixCls}__button`
+
+            return {
+                wrap,
+                files,
+                file,
+                thumb,
+                remove,
+                select,
+                button,
+            }
+        },
     },
     methods: {
         /** 

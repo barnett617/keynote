@@ -39,6 +39,7 @@ class Home extends Component {
       'wux-grids': '../../lib/grids/index',
       'wux-grid': '../../lib/grid/index',
       'wux-search-bar': '../../lib/search-bar/index',
+      "wux-prompt": "../../lib/prompt/index"
     }
   }
 
@@ -682,33 +683,41 @@ class Home extends Component {
     });
     return (
         <View className='home'>
-          <View visible={this.state.showSearch}>
-            <wux-search-bar 
-              clear 
-              show-cancel 
-              value={this.state.searchValue}
-              controlled 
-              placeholder='搜索' 
-              onchange={this.searchChange}
-              onfocus={this.searchFocus}
-              onblur={this.searchBlue} 
-              onconfirm={this.searchConfirm} 
-              onclear={this.searchClear}
-              oncancel={this.searchCancel}
-            />
-          </View>
-          <ScrollView
-            className='home-scrollview'
-            scrollY
-            scrollWithAnimation
-            scrollTop={this.state.scrollTop}
-            lowerThreshold='20'
-            upperThreshold='20'
-            onScrolltoupper={this.onScrolltoupper}
-            onScroll={this.onScroll}
-          >
-            { postList }
-          </ScrollView>
+          {
+            this.state.posts.length > 0
+            ?
+            <View>
+              <View visible={this.state.showSearch}>
+                <wux-search-bar 
+                  clear 
+                  show-cancel 
+                  value={this.state.searchValue}
+                  controlled 
+                  placeholder='搜索' 
+                  onchange={this.searchChange}
+                  onfocus={this.searchFocus}
+                  onblur={this.searchBlue} 
+                  onconfirm={this.searchConfirm} 
+                  onclear={this.searchClear}
+                  oncancel={this.searchCancel}
+                />
+              </View>
+              <ScrollView
+                className='home-scrollview'
+                scrollY
+                scrollWithAnimation
+                scrollTop={this.state.scrollTop}
+                lowerThreshold='20'
+                upperThreshold='20'
+                onScrolltoupper={this.onScrolltoupper}
+                onScroll={this.onScroll}
+              >
+                { postList }
+              </ScrollView>
+            </View>
+            :
+            <wux-prompt style='height: 100%;' visible title='空空如也' text='暂时没有数据' />
+          }
           <View id='home-input' className='home-input'>
               <View className='home-input-box'>
                 <wux-cell hover-class='none'>

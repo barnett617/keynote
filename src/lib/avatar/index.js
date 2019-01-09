@@ -1,6 +1,12 @@
-Component({
-    externalClasses: ['wux-class'],
+import baseComponent from '../helpers/baseComponent'
+import classNames from '../helpers/classNames'
+
+baseComponent({
     properties: {
+        prefixCls: {
+            type: String,
+            value: 'wux-avatar',
+        },
         shape: {
             type: String,
             value: 'circle',
@@ -24,6 +30,22 @@ Component({
     },
     data: {
         childrenStyle: '',
+    },
+    computed: {
+        classes() {
+            const { prefixCls, shape, size, src } = this.data
+            const wrap = classNames(prefixCls, {
+                [`${prefixCls}--${shape}`]: shape,
+                [`${prefixCls}--${size}`]: size,
+                [`${prefixCls}--thumb`]: src,
+            })
+            const string = `${prefixCls}__string`
+
+            return {
+                wrap,
+                string,
+            }
+        },
     },
     methods: {
         setScale() {
