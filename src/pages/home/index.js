@@ -7,6 +7,8 @@ import camera from '../../assets/images/_ionicons_svg_md-camera.svg';
 import mic from '../../assets/images/_ionicons_svg_ios-mic.svg';
 import pic from '../../assets/images/_ionicons_svg_md-images.svg';
 
+let recorderManager;
+
 class Home extends Component {
 
   config = {
@@ -24,19 +26,19 @@ class Home extends Component {
       'wux-tabbar': '../../lib/tabbar/index',
       'wux-tabbar-item': '../../lib/tabbar-item/index',
       //
-      "wux-fab-button": "../../lib/fab-button/index",
+      'wux-fab-button': '../../lib/fab-button/index',
       // input
-      "wux-cell-group": "../../lib/cell-group/index",
-      "wux-cell": "../../lib/cell/index",
-      "wux-input": "../../lib/input/index",
+      'wux-cell-group': '../../lib/cell-group/index',
+      'wux-cell': '../../lib/cell/index',
+      'wux-input': '../../lib/input/index',
       // popup
-      "wux-button": "../../lib/button/index",
-      "wux-popup": "../../lib/popup/index",
+      'wux-button': '../../lib/button/index',
+      'wux-popup': '../../lib/popup/index',
       // grid
-      "wux-icon": "../../lib/icon/index",
-      "wux-grids": "../../lib/grids/index",
-      "wux-grid": "../../lib/grid/index",
-      "wux-search-bar": "../../lib/search-bar/index",
+      'wux-icon': '../../lib/icon/index',
+      'wux-grids': '../../lib/grids/index',
+      'wux-grid': '../../lib/grid/index',
+      'wux-search-bar': '../../lib/search-bar/index',
     }
   }
 
@@ -138,7 +140,7 @@ class Home extends Component {
         }
         this.setState({
           posts: arr.concat(this.state.posts),
-          scrollTop: 1000 * (res.data.objects.length),
+          scrollTop: 2000 * (res.data.objects.length),
           currentPage: res.data.meta.offset + this.state.pageSize,
         });
         // 初始化预览图片列表
@@ -315,6 +317,8 @@ class Home extends Component {
     Taro.chooseImage({
       sourceType: sourceType,
       success: (res) => {
+        this.closePop()
+        
         if (res) {
           let MyFile = new Taro.BaaS.File()
           let fileParams = {filePath: res.tempFilePaths[0]}
@@ -358,18 +362,41 @@ class Home extends Component {
     let tableID = 58649
     let SinglePost = new Taro.BaaS.TableObject(tableID)
     let postObj = SinglePost.create()
-    Taro.showLoading({
-      title: '发送中',
-    })
     this.showLoad()
     postObj.set(params).save().then(resp => {
       this.hideLoad()
       if (resp.statusCode === 201) {
-        Taro.showToast({
-          title: '发送成功',
-          icon: 'success',
-          duration: 2000
+        self.setState({
+          currentPage: 1,
+          posts: this.state.posts.concat(resp.data),
+          scrollTop: 1500 * (this.state.posts.length + 1),
+          // todo 图片预览列表
         })
+      }
+    }, err => {
+      this.hideLoad()
+      Taro.showToast({
+        title: '网络连接失败',
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  }
+
+  sendRecordMessage(path) {
+    const self = this;
+    const params = {
+      content: path,
+      type: 'audio',
+      userUniformId: self.state.openId
+    }
+    let tableID = 58649
+    let SinglePost = new Taro.BaaS.TableObject(tableID)
+    let postObj = SinglePost.create()
+    this.showLoad()
+    postObj.set(params).save().then(resp => {
+      this.hideLoad()
+      if (resp.statusCode === 201) {
         self.setState({
           currentPage: 1,
           posts: this.state.posts.concat(resp.data),
@@ -477,7 +504,7 @@ class Home extends Component {
         const data = res.data.objects
         this.setState({
           posts: data,
-          scrollTop: 1000 * (data.length),
+          scrollTop: 2000 * (data.length),
           scrollSearch: false
         });
       }
@@ -501,6 +528,68 @@ class Home extends Component {
     this.handleList();
   }
 
+  stopRecord() {
+    Taro.hideToast()
+    recorderManager.stop()
+  }
+
+  startRecord() {
+    Taro.showToast({
+      title: '录制中',
+      icon: 'loading',
+      duration: 10000
+    })
+    recorderManager = Taro.getRecorderManager()
+    recorderManager.onStop((res) => {
+      console.log('recorder stop', res)
+      this.uploadRecord(res)
+    })
+    recorderManager.start({
+      duration: 10000,
+      sampleRate: 44100,
+      numberOfChannels: 1,
+      encodeBitRate: 192000,
+      format: 'mp3',
+      frameSize: 50
+    })
+  }
+
+  uploadRecord(record) {
+    let MyFile = new Taro.BaaS.File()
+    let fileParams = {filePath: record.tempFilePath}
+    let metaData = {categoryID: 'audio'}
+    Taro.showToast({
+      title: '上传中',
+      icon: 'loading',
+      duration: 10000
+    })
+    MyFile.upload(fileParams, metaData).then(uploadRes => {
+      this.closePop()
+      Taro.hideToast();
+      /*
+      * 注: 只要是服务器有响应的情况都会进入 success, 即便是 4xx，5xx 都会进入这里
+      * 如果上传成功则会返回资源远程地址,如果上传失败则会返回失败信息
+      */
+      let data = uploadRes.data  // res.data 为 Object 类型
+      this.sendRecordMessage(data.path);
+    }, err => {
+      console.log('upload err: ' + err);
+    })
+  }
+
+  playRecord(record) {
+    const innerAudioContext = Taro.createInnerAudioContext()
+    innerAudioContext.src = record
+    innerAudioContext.play()
+    innerAudioContext.onPlay(() => {
+      console.log('开始播放')
+    })
+    innerAudioContext.onError((res) => {
+      console.log(res.errMsg)
+      console.log(res.errCode)
+    })
+  }
+
   render () {
 
     const icon = 'data:image/png;base64,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'
@@ -515,18 +604,18 @@ class Home extends Component {
         label: '分享',
         icon,
       },
-      {
-        openType: 'contact',
-        label: '客服',
-        icon
-        // icon: '<ion-icon name="contacts"></ion-icon>',
-      },
+      // {
+      //   openType: 'contact',
+      //   label: '客服',
+      //   icon
+      //   // icon: '<ion-icon name='contacts'></ion-icon>',
+      // },
       {
         // openType: 'contact',
         action: this.clickNotice,
         label: '通告',
         icon
-        // icon: '<ion-icon name="contacts"></ion-icon>',
+        // icon: '<ion-icon name='contacts'></ion-icon>',
       },
       // {
       //   label: 'View on Demo',
@@ -559,6 +648,23 @@ class Home extends Component {
           </View>
         </View>
         :
+        item.type === 'audio'
+        ?
+        <View className='home-list-item-wrap'>
+          <View className='home-list-item-view-time'>
+            <Text>{showTime}</Text>
+          </View>
+          <View className='home-list-item-view-wrap'>
+            <View className='home-list-item-view-wrap-avatar'>
+              <OpenData type='userAvatarUrl' />
+            </View>
+            <View onClick={this.playRecord.bind(this, item.content)} className='home-list-item-view-text-audio' key={index}>
+              <wux-icon size={16} type='ios-musical-note' />
+              <Text>点击播放</Text>
+            </View>
+          </View>
+        </View>
+        :
         <View className='home-list-item-wrap'>
           <View className='home-list-item-view-time'>
             <Text>{showTime}</Text>
@@ -576,7 +682,7 @@ class Home extends Component {
     });
     return (
         <View className='home'>
-          <View className={this.state.showSearch}>
+          <View visible={this.state.showSearch}>
             <wux-search-bar 
               clear 
               show-cancel 
@@ -629,13 +735,13 @@ class Home extends Component {
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【界面】顶部通知栏移入浮动按钮
+                【新功能】新增发语音功能
               </View>
               <View className='modal-content-text'>
-                【新功能】增加内容模糊搜索
+                【样式】样式微调
               </View>
               <View className='modal-content-text'>
-                【排版】输入框布局重排
+                【下线】客服功能下线
               </View>
             </View>
             <View onClick={this.hideNotice} className='modal-btn'>
@@ -659,22 +765,9 @@ class Home extends Component {
           <wux-popup position='bottom' maskClosable visible={this.state.popupShow} onclose={this.closePop}>
             <wux-grids>
               <wux-grid onclick={this.uploadImage.bind(this, 'image')} thumb={pic} label='照片' />
-              <wux-grid thumb={mic} label='语音输入' />
+              <wux-grid ontouchstart={this.startRecord.bind(this)} ontouchend={this.stopRecord.bind(this)} thumb={mic} label='语音输入' />
               <wux-grid onclick={this.uploadImage.bind(this, 'camera')} thumb={camera} label='拍摄' />
-              {/* <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
-              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
-              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
-              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
-              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' />
-              <wux-grid thumb='http://pbqg2m54r.bkt.clouddn.com/logo.png' label='Wux Weapp' /> */}
             </wux-grids>
-            {/* <wux-cell-group title='Your fathers'>
-                <wux-cell hover-class='none' title='Jack Ma'></wux-cell>
-                <wux-cell hover-class='none' title='Pony'></wux-cell>
-                <wux-cell hover-class='none'>
-                    <wux-button block type='balanced' onClick={this.click}>Yes</wux-button>
-                </wux-cell>
-            </wux-cell-group> */}
           </wux-popup>
           {/* <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
             <wux-tabbar-item key='tab1' title='情绪'>
