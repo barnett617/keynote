@@ -4,6 +4,30 @@ import dateFormat from '../../utils/dateFormat';
 import './index.scss'
 import '../../lib/styles/index.wxss';
 
+const icon = 'data:image/png;base64,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'
+const buttons = [{
+  openType: 'getUserInfo',
+  label: 'GetUserInfo',
+  icon,
+},
+{
+  openType: 'share',
+  label: 'Share',
+  icon,
+},
+{
+  openType: 'contact',
+  label: 'Contact',
+  icon,
+},
+{
+  label: 'View on Demo',
+  icon,
+},
+]
+
+
+
 class Home extends Component {
 
   config = {
@@ -20,6 +44,12 @@ class Home extends Component {
       'wux-badge': '../../lib/badge/index',
       'wux-tabbar': '../../lib/tabbar/index',
       'wux-tabbar-item': '../../lib/tabbar-item/index',
+      //
+      "wux-fab-button": "../../lib/fab-button/index",
+      // input
+      "wux-cell-group": "../../lib/cell-group/index",
+      "wux-cell": "../../lib/cell/index",
+      "wux-input": "../../lib/input/index"
     }
   }
 
@@ -44,6 +74,16 @@ class Home extends Component {
       currentTab: 'tab1',
       currentPage: 0,
       pageSize: 20,
+      // 浮动按钮
+      types: ['topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'center'],
+      typeIndex: 3,
+      colors: ['light', 'stable', 'positive', 'calm', 'balanced', 'energized', 'assertive', 'royal', 'dark'],
+      colorIndex: 4,
+      dirs: ['horizontal', 'vertical', 'circle'],
+      dirIndex: 1,
+      sAngle: 0,
+      eAngle: 360,
+      spaceBetween: 10,
     }
   }
 
@@ -74,6 +114,14 @@ class Home extends Component {
         duration: 2000
       })
     })
+  }
+
+  showLoad() {
+    Taro.showNavigationBarLoading();
+  }
+
+  hideLoad() {
+    Taro.hideNavigationBarLoading();
   }
 
   /**
@@ -117,19 +165,6 @@ class Home extends Component {
     })
   }
 
-  /**
-   * 内置监听下拉动作
-   */
-  onPullDownRefresh () {
-    const self = this;
-    console.log('下拉触发')
-    Taro.showNavigationBarLoading();  
-    // 显示 loading 提示框,在 ios 系统下，会导致顶部的加载的三个点看不见  
-    setTimeout(function() {  
-      self.handleList();  
-    }, 1000);  
-  }
-
   componentWillReceiveProps (nextProps) {
     console.log('this.props: ' + this.props);
     console.log('nextProps: ' + nextProps);
@@ -159,13 +194,10 @@ class Home extends Component {
     let tableID = 58649
     let SinglePost = new Taro.BaaS.TableObject(tableID)
     let postObj = SinglePost.create()
+    this.showLoad()
     postObj.set(params).save().then(resp => {
       if (resp.statusCode === 201) {
-        Taro.showToast({
-          title: '发送成功',
-          icon: 'success',
-          duration: 2000
-        })
+        this.hideLoad()
         // 清空输入框
         self.setState({
           content: ''
@@ -190,10 +222,8 @@ class Home extends Component {
     const self = this;
     let result = '';
     let content = self.state.content;
+    Taro.showNavigationBarLoading();
     // 这里的接口需要在备案域名机器下，并且配置app开发
-    Taro.showLoading({
-      title: '情绪分析中',
-    })
     Taro.request({
       url: 'https://www.frontend.wang',
       // url: 'http://101.132.174.1:8082/analysis/',
@@ -205,7 +235,7 @@ class Home extends Component {
         'content-type': 'application/x-www-form-urlencoded'
       }
     }).then(res => {
-      Taro.hideLoading()
+      this.hideLoad()
       const data = res.data.package.data;
       data.forEach(element => {
         result += (element + ' ')
@@ -218,8 +248,8 @@ class Home extends Component {
       Taro.showModal({
         title: '情绪评估',
         content: '我们对于内容【' + content + '】的评估结果是： \n' + result,
-        confirmText: '对的！',
-        cancelText: '不对~',
+        // confirmText: '对的！',
+        // cancelText: '不对~',
         success(successRes) {
           // if (successRes.confirm) {
           //   Taro.showToast({
@@ -237,15 +267,12 @@ class Home extends Component {
         }
       })
     }, err => {
-      Taro.hideLoading()
+      this.hideLoad()
       Taro.showToast({
         title: '分析系统坏掉了哦~',
         icon: 'none',
         duration: 2000
       })
-      console.log('analysis error: ' + err)
-      // 收集错误的事件
-      Taro.BaaS.ErrorTracker.track(err)
     })
   }
 
@@ -271,13 +298,6 @@ class Home extends Component {
     console.log('onScroll')
     console.log('scrollHeight: ' + e.target.scrollHeight)
     console.log('scrollTop: ' + e.target.scrollTop)
-  }
-
-  /**
-   * 监听输入法确定动作
-   */
-  handleConfirm = (e) => {
-    this.handleCommit();
   }
 
   /**
@@ -328,18 +348,15 @@ class Home extends Component {
     Taro.showLoading({
       title: '发送中',
     })
+    this.showLoad()
     postObj.set(params).save().then(resp => {
       Taro.hideLoading()
       if (resp.statusCode === 201) {
-        Taro.showToast({
-          title: '发送成功',
-          icon: 'success',
-          duration: 2000
-        })
+        this.hideLoad()
         self.handleList();
       }
     }, err => {
-      Taro.hideLoading()
+      this.hideLoad()
       Taro.showToast({
         title: '发送失败',
         icon: 'none',
@@ -378,6 +395,23 @@ class Home extends Component {
     this.setState({
       currentTab: e.detail.key,
     })
+  }
+
+  // 浮动按钮
+  changeFab() {
+
+  }
+
+  clickFab() {
+
+  }
+
+  contactFab(e) {
+    console.log('onContact', e)
+  }
+
+  onGotUserInfo(e) {
+    console.log('onGotUserInfo', e)
   }
 
   render () {
@@ -447,13 +481,24 @@ class Home extends Component {
                 <wux-icon size='28' color='#999999' type='md-images' />
               </View>
               <View>
-                <Textarea className='home-input-content' 
+                {/* <Textarea className='home-input-content' 
                   onInput={this.handelChange.bind(this)} 
                   type='text' 
                   // onFocus={this.handleFocus}
                   cursorSpacing='9'
                   value={this.state.content}
-                />
+                /> */}
+                <wux-cell hover-class='none'>
+                  <wux-input 
+                    value={this.state.content} 
+                    controlled 
+                    type='text' 
+                    confirm-type='发送'
+                    confirmHold
+                    onchange={this.handelChange}
+                    onconfirm={this.handleCommit}
+                  />
+                </wux-cell>
               </View>
               <View onClick={this.handleConfirm.bind(this)} className='home-input-btn-send'>
                 <wux-icon size='28' color='#999999' type='md-paper-plane' />
@@ -474,6 +519,20 @@ class Home extends Component {
               好的
             </View>
           </View>
+          <wux-fab-button 
+            position={this.state.types[this.state.typeIndex]}
+            theme={this.state.colors[this.state.colorIndex]}
+            direction={this.state.dirs[this.state.dirIndex]}
+            reverse={this.state.reverse} 
+            spaceBetween={this.state.spaceBetween}
+            sAngle={this.state.sAngle} 
+            eAngle={this.state.eAngle}
+            buttons={buttons}
+            onChange={this.changeFab}
+            onClick={this.clickFab}
+            onContact={this.contactFab}
+            onGetuserinfo={this.onGotUserInfo}
+          />
           {/* <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
             <wux-tabbar-item key='tab1' title='情绪'>
                 <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
