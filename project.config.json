@@ -1,5 +1,5 @@
 {
-	"miniprogramRoot": "./dist",
+	"miniprogramRoot": "dist/",
 	"projectname": "dailyhappy",
 	"description": "Happy Everyday",
 	"appid": "wx1849501120de4702",

@@ -92,7 +92,7 @@ class Home extends Component {
   }
 
   componentDidMount () {
-    this.handleList(this.state.openid)
+    
   }
 
   /**
@@ -103,6 +103,7 @@ class Home extends Component {
     const self = this;
     Taro.showNavigationBarLoading();  
     Taro.BaaS.login(false).then(res => {
+      this.handleList(res.openid)
       self.setState({
         openId: res.openid,
       });
@@ -200,11 +201,14 @@ class Home extends Component {
         this.hideLoad()
         // 清空输入框
         self.setState({
-          content: ''
+          content: '',
+          currentPage: 1,
+          posts: this.state.posts.concat(resp.data),
+          scrollTop: 1000 * (this.state.posts.length + 1),
         });
+        // self.handleList();
         self.analysis();
         // 重查数据
-        self.handleList();
       }
     }, err => {
       Taro.showToast({
@@ -306,7 +310,7 @@ class Home extends Component {
   uploadImage = () => {
     const self = this;
     Taro.chooseImage({
-      success: function(res) {
+      success: (res) => {
         if (res) {
           let MyFile = new Taro.BaaS.File()
           let fileParams = {filePath: res.tempFilePaths[0]}
@@ -325,6 +329,8 @@ class Home extends Component {
             */
             let data = uploadRes.data  // res.data 为 Object 类型
             const imagePath = data.path
+            debugger
+            this.state.imageList.push(imagePath);
             // 上传图片到资源库后，发送一条消息
             self.sendImageMessage(imagePath);
           }, err => {
@@ -350,19 +356,27 @@ class Home extends Component {
     })
     this.showLoad()
     postObj.set(params).save().then(resp => {
-      Taro.hideLoading()
+      this.hideLoad()
       if (resp.statusCode === 201) {
-        this.hideLoad()
-        self.handleList();
+        Taro.showToast({
+          title: '发送成功',
+          icon: 'success',
+          duration: 2000
+        })
+        self.setState({
+          currentPage: 1,
+          posts: this.state.posts.concat(resp.data),
+          scrollTop: 1500 * (this.state.posts.length + 1),
+          // todo 图片预览列表
+        })
       }
     }, err => {
       this.hideLoad()
       Taro.showToast({
-        title: '发送失败',
+        title: '网络连接失败',
         icon: 'none',
         duration: 2000
       })
-      console.log('send image message err: ' + err)
     })
   }
 
@@ -508,11 +522,12 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.3】
+              更新公告【版本1.3.4】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【优化】首页替换背景图
+                【修复】发送后不更新列表
+                【修复】情绪分析
               </View>
             </View>
             <View onClick={this.hideModal} className='modal-btn'>
