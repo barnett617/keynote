@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Button, OpenData } from '@tarojs/components'
-import StartImg from '../../assets/images/start1.jpeg'
+import StartImg from '../../assets/images/min.jpeg'
 
 // import { connect } from '@tarojs/redux'
 // import { add, minus, asyncAdd } from '../../actions/counter'
