@@ -8,7 +8,7 @@ class Index extends Component {
     super(props)
     this.state = {
       datalist: [],
-      pageSize: 20,
+      pageSize: 50,
       currentPage: 0,
       openId: '',
       currentTab: 'tab1'
