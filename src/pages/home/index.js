@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Textarea, Image, OpenData, Button, Video } from '@tarojs/components'
+import { View, ScrollView, Text, Image, OpenData, Video } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
 import './index.scss'
 import '../../lib/styles/index.wxss';
@@ -55,13 +55,8 @@ class Home extends Component {
       imageList: [],
       // 用户唯一标示
       openId: '',
-      // 情绪分析结果
-      analysisResult: [],
-      // 更新通告
-      notice: '',
       modal: 'hide',
       shadow: 'hide',
-      currentTab: 'tab1',
       currentPage: 0,
       pageSize: 20,
       // 浮动按钮
@@ -85,10 +80,6 @@ class Home extends Component {
     this.handleLogin();
   }
 
-  componentDidMount () {
-    
-  }
-
   /**
    * 微信用户登录小程序
    * 获取用户唯一标识 openid
@@ -103,6 +94,7 @@ class Home extends Component {
       });
     }, err => {
       // 登录失败
+      console.log(err)
       Taro.showToast({
         title: '登录失败，未获取到用户信息~',
         icon: 'none',
@@ -152,6 +144,7 @@ class Home extends Component {
         });
       }
     }, err => {
+      console.log(err)
       Taro.showToast({
         title: '服务错误~',
         icon: 'none',
@@ -197,6 +190,7 @@ class Home extends Component {
         // 重查数据
       }
     }, err => {
+      console.log(err)
       Taro.showToast({
         title: '发送失败',
         icon: 'none',
@@ -230,33 +224,14 @@ class Home extends Component {
       data.forEach(element => {
         result += (element + ' ')
       });
-      if (res && +res.data.status === 200) {
-        self.setState({
-          analysisResult: data
-        })
-      }
       Taro.showModal({
         title: '情绪评估',
         content: '我们对于内容【' + content + '】的评估结果是： \n' + result,
-        // confirmText: '对的！',
-        // cancelText: '不对~',
-        success(successRes) {
-          // if (successRes.confirm) {
-          //   Taro.showToast({
-          //     title: '你点击了对的！',
-          //     icon: 'success',
-          //     duration: 2000
-          //   })
-          // } else if (successRes.cancel) {
-          //   Taro.showToast({
-          //     title: '你点击了不对~',
-          //     icon: 'success',
-          //     duration: 2000
-          //   })
-          // }
-        }
+        confirmText: '对的！',
+        cancelText: '不对~',
       })
     }, err => {
+      console.log(err)
       this.hideLoad()
       Taro.showToast({
         title: '分析系统坏掉了哦~',
@@ -319,7 +294,6 @@ class Home extends Component {
       sourceType: sourceType,
       success: (res) => {
         this.closePop()
-        
         if (res) {
           let MyFile = new Taro.BaaS.File()
           let fileParams = {filePath: res.tempFilePaths[0]}
@@ -375,6 +349,7 @@ class Home extends Component {
         })
       }
     }, err => {
+      console.log(err)
       this.hideLoad()
       Taro.showToast({
         title: '网络连接失败',
@@ -406,6 +381,7 @@ class Home extends Component {
         })
       }
     }, err => {
+      console.log(err)
       this.hideLoad()
       Taro.showToast({
         title: '网络连接失败',
@@ -440,14 +416,9 @@ class Home extends Component {
     })
   }
 
-  changeTab(e) {
-    this.setState({
-      currentTab: e.detail.key,
-    })
-  }
-
   // 浮动按钮
   changeFab(e) {
+    console.log(e)
   }
 
   clickFab(e) {
@@ -477,18 +448,19 @@ class Home extends Component {
   }
 
   clickNotice(e) {
+    console.log(e)
   }
 
   searchChange(e) {
-
+    console.log(e)
   }
 
   searchFocus(e) {
-
+    console.log(e)
   }
 
   searchBlue(e) {
-
+    console.log(e)
   }
 
   searchConfirm(e) {
@@ -510,6 +482,7 @@ class Home extends Component {
         });
       }
     }, err => {
+      console.log(err)
       Taro.showToast({
         title: '服务错误~',
         icon: 'none',
@@ -519,10 +492,11 @@ class Home extends Component {
   }
 
   searchClear(e) {
-
+    console.log(e)
   }
 
   searchCancel(e) {
+    console.log(e)
     this.setState({
       scrollSearch: true
     })
@@ -647,6 +621,7 @@ class Home extends Component {
         })
       }
     }, err => {
+      console.log(err)
       this.hideLoad()
       Taro.showToast({
         title: '网络连接失败',
@@ -662,38 +637,19 @@ class Home extends Component {
   }
 
   render () {
-
     const icon = 'data:image/png;base64,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'
     const buttons = [
-      // {
-      //   openType: 'getUserInfo',
-      //   label: 'GetUserInfo',
-      //   icon,
-      // },
       {
         openType: 'share',
         label: '分享',
         icon,
       },
-      // {
-      //   openType: 'contact',
-      //   label: '客服',
-      //   icon
-      //   // icon: '<ion-icon name='contacts'></ion-icon>',
-      // },
       {
-        // openType: 'contact',
         action: this.clickNotice,
         label: '通告',
         icon
-        // icon: '<ion-icon name='contacts'></ion-icon>',
       },
-      // {
-      //   label: 'View on Demo',
-      //   icon,
-      // },
     ]
-
     const postList = this.state.posts.map((item, index) => {
       const showTime = dateFormat.common(item.created_at)
       return (
@@ -789,12 +745,12 @@ class Home extends Component {
                   value={this.state.searchValue}
                   controlled 
                   placeholder='搜索' 
-                  onchange={this.searchChange}
-                  onfocus={this.searchFocus}
-                  onblur={this.searchBlue} 
-                  onconfirm={this.searchConfirm} 
-                  onclear={this.searchClear}
-                  oncancel={this.searchCancel}
+                  onchange={this.searchChange.bind(this)}
+                  onfocus={this.searchFocus.bind(this)}
+                  onblur={this.searchBlue.bind(this)} 
+                  onconfirm={this.searchConfirm.bind(this)} 
+                  onclear={this.searchClear.bind(this)}
+                  oncancel={this.searchCancel.bind(this)}
                 />
               </View>
               <ScrollView
@@ -822,8 +778,8 @@ class Home extends Component {
                     type='text' 
                     confirm-type='发送'
                     confirmHold
-                    onchange={this.handelChange}
-                    onconfirm={this.handleCommit}
+                    onchange={this.handelChange.bind(this)}
+                    onconfirm={this.handleCommit.bind(this)}
                   />
                 </wux-cell>
               </View>
@@ -835,11 +791,14 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.7】
+              更新公告【版本1.3.8】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【新功能】新增发视频功能
+                【新功能】增加【时间轴】和【我的】菜单
+              </View>
+              <View className='modal-content-text'>
+                【布局】重新布局并排版
               </View>
             </View>
             <View onClick={this.hideNotice} className='modal-btn'>
@@ -855,12 +814,12 @@ class Home extends Component {
             sAngle={this.state.sAngle} 
             eAngle={this.state.eAngle}
             buttons={buttons}
-            onchange={this.changeFab}
-            onclick={this.clickFab}
-            oncontact={this.contactFab}
-            oncetuserinfo={this.onGotUserInfo}
+            onchange={this.changeFab.bind(this)}
+            onclick={this.clickFab.bind(this)}
+            oncontact={this.contactFab.bind(this)}
+            oncetuserinfo={this.onGotUserInfo.bind(this)}
           />
-          <wux-popup position='bottom' maskClosable visible={this.state.popupShow} onclose={this.closePop}>
+          <wux-popup position='bottom' maskClosable visible={this.state.popupShow} onclose={this.closePop.bind(this)}>
             <wux-grids col={4}>
               <wux-grid onclick={this.uploadImage.bind(this, 'image')} thumb={pic} label='照片' />
               <wux-grid ontouchstart={this.startRecord.bind(this)} ontouchend={this.stopRecord.bind(this)} thumb={mic} label='语音输入' />
@@ -868,20 +827,6 @@ class Home extends Component {
               <wux-grid onclick={this.chooseVideo.bind(this)} thumb={camera} label='视频' />
             </wux-grids>
           </wux-popup>
-          {/* <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
-            <wux-tabbar-item key='tab1' title='情绪'>
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
-            </wux-tabbar-item>
-            <wux-tabbar-item key='tab2' title='长篇'>
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
-            </wux-tabbar-item>
-            <wux-tabbar-item key='tab3' title='关于'>
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-on' />
-                <wux-icon wux-class='icon' type='ios-home' size='22' slot='icon-off' />
-            </wux-tabbar-item>
-          </wux-tabbar> */}
         </View>
     )
   }

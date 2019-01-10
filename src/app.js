@@ -19,6 +19,8 @@ class App extends Component {
       'pages/index/index',
       'pages/home/index',
       'pages/long/index',
+      'pages/list/index',
+      'pages/me/index',
     ],
     window: {
       backgroundTextStyle: 'light',

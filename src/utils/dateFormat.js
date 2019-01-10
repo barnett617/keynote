@@ -21,6 +21,8 @@ function common (dateStr) {
     let timeStr;
     if (year === nowYear && month === nowMonth && day === nowDay) {
       timeStr = '' + hour + ':' + minute;
+    } else if (year === nowYear && month === nowMonth && day === (nowDay - 1)) {
+      timeStr = '昨天 ' + hour + ':' + minute;
     } else {
       timeStr = '' + year + '年' + month + '月' + day + '日' + ' ' + hour + ':' + minute;
     }
