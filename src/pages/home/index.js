@@ -1,11 +1,14 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Text, Image, OpenData, Video } from '@tarojs/components'
+import { View, ScrollView, Text, Image, OpenData, Video, Textarea } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
 import './index.scss'
 import '../../lib/styles/index.wxss';
 import camera from '../../assets/images/_ionicons_svg_md-camera.svg';
 import mic from '../../assets/images/_ionicons_svg_ios-mic.svg';
 import pic from '../../assets/images/_ionicons_svg_md-images.svg';
+import edit from '../../assets/images/_ionicons_svg_ios-create.svg';
+import film from '../../assets/images/_ionicons_svg_ios-film.svg';
+import { $wuxDialog } from '../../lib/index'
 
 let recorderManager;
 
@@ -39,7 +42,9 @@ class Home extends Component {
       'wux-grids': '../../lib/grids/index',
       'wux-grid': '../../lib/grid/index',
       'wux-search-bar': '../../lib/search-bar/index',
-      "wux-prompt": "../../lib/prompt/index"
+      "wux-prompt": "../../lib/prompt/index",
+      "wux-dialog": "../../lib/dialog/index",
+      "wux-textarea": "../../lib/textarea/index"
     }
   }
 
@@ -56,6 +61,7 @@ class Home extends Component {
       // 用户唯一标示
       openId: '',
       modal: 'hide',
+      showMultiText: 'hide',
       shadow: 'hide',
       currentPage: 0,
       pageSize: 20,
@@ -73,6 +79,9 @@ class Home extends Component {
       searchValue: '',
       showSearch: 'hide',
       scrollSearch: true,
+      // 光标与键盘的距离，单位 px 
+      cursorSpacing: 80,
+      textareaRows: 3,
     }
   }
 
@@ -286,6 +295,9 @@ class Home extends Component {
    */
   uploadImage = (type) => {
     const self = this;
+    this.setState({
+      showMultiText: 'hide'
+    })
     let sourceType = []
     if (type === 'image') {
       sourceType.push('album')
@@ -448,6 +460,7 @@ class Home extends Component {
   closePop() {
     this.setState({
       popupShow: false,
+      showMultiText: 'hide'
     })
   }
 
@@ -512,6 +525,9 @@ class Home extends Component {
   }
 
   startRecord() {
+    this.setState({
+      showMultiText: 'hide'
+    })
     Taro.showToast({
       title: '录制中',
       icon: 'loading',
@@ -569,6 +585,9 @@ class Home extends Component {
   }
 
   chooseVideo() {
+    this.setState({
+      showMultiText: 'hide'
+    })
     Taro.chooseVideo({
       sourceType: ['album', 'camera'],
       maxDuration: 60,
@@ -643,6 +662,40 @@ class Home extends Component {
     this.setState({
       showSearch: ''
     })
+  }
+
+  multiText() {
+    // const alert = (content) => {
+    //   $wuxDialog('#wux-dialog--alert').alert({
+    //       resetOnClose: true,
+    //       title: '提示',
+    //       content: content,
+    //   })
+    // }
+    // $wuxDialog().prompt({
+    //     resetOnClose: true,
+    //     title: '多行输入',
+    //     // content: '密码为8位数字',
+    //     fieldtype: 'text',
+    //     defaultText: '',
+    //     // placeholder: '请输入Wi-Fi密码',
+    //     maxlength: 140,
+    //     onConfirm(e, response) {
+    //         const content = response
+    //         // alert(content)
+    //     },
+    // })
+    this.setState({
+      showMultiText: 'modal'
+    })
+  }
+
+  commitLong() {
+    this.setState({
+      popupShow: false,
+      showMultiText: 'hide'
+    })
+    this.handleCommit();
   }
 
   render () {
@@ -803,18 +856,36 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.8】
+              更新公告【版本1.3.9】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【新功能】增加【时间轴】和【我的】菜单
+                【简化】简化菜单，合并重排
               </View>
               <View className='modal-content-text'>
-                【布局】重新布局并排版
+                【优化】单独提供多行输入
               </View>
             </View>
             <View onClick={this.hideNotice} className='modal-btn'>
               好的
+            </View>
+          </View>
+          <View className={this.state.showMultiText}>
+            <View className='modal-textarea'>
+              <wux-textarea
+                onchange={this.handelChange.bind(this)} 
+                cursorSpacing={this.state.textareaRows}
+                value={this.state.content}
+                placeholder='这里可以输入多行文本呦~'
+                rows={this.state.textareaRows}
+                hasCount
+                clear
+                autoHeight
+                adjust-position
+              ></wux-textarea>
+            </View>
+            <View className='modal-textarea-btn'>
+              <wux-button onclick={this.commitLong.bind(this)} block type='positive'>发送</wux-button>
             </View>
           </View>
           <wux-fab-button 
@@ -832,13 +903,18 @@ class Home extends Component {
             oncetuserinfo={this.onGotUserInfo.bind(this)}
           />
           <wux-popup position='bottom' maskClosable visible={this.state.popupShow} onclose={this.closePop.bind(this)}>
-            <wux-grids col={4}>
-              <wux-grid onclick={this.uploadImage.bind(this, 'image')} thumb={pic} label='照片' />
+            <wux-grids col={3}>
+              <wux-grid onclick={this.uploadImage.bind(this, 'image')} thumb={pic} label='图片' />
               <wux-grid ontouchstart={this.startRecord.bind(this)} ontouchend={this.stopRecord.bind(this)} thumb={mic} label='语音输入' />
-              <wux-grid onclick={this.uploadImage.bind(this, 'camera')} thumb={camera} label='拍摄' />
-              <wux-grid onclick={this.chooseVideo.bind(this)} thumb={camera} label='视频' />
+              <wux-grid onclick={this.uploadImage.bind(this, 'camera')} thumb={camera} label='拍照' />
+            </wux-grids>
+            <wux-grids col={3}>
+              <wux-grid onclick={this.chooseVideo.bind(this)} thumb={film} label='录影' />
+              <wux-grid onclick={this.multiText.bind(this)} thumb={edit} label='多行输入' />
             </wux-grids>
           </wux-popup>
+          <wux-dialog id='wux-dialog' />
+          <wux-dialog id='wux-dialog--alert' />
         </View>
     )
   }

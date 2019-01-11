@@ -18,7 +18,6 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/home/index',
-      'pages/long/index',
       'pages/list/index',
       'pages/me/index',
     ],

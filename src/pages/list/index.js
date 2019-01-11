@@ -132,10 +132,10 @@ class Index extends Component {
                 <wux-icon wux-class='icon' type='ios-ice-cream' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-ice-cream' size='22' slot='icon-off' />
             </wux-tabbar-item>
-            <wux-tabbar-item key='tab3' title='小啰嗦'>
+            {/* <wux-tabbar-item key='tab3' title='小啰嗦'>
                 <wux-icon wux-class='icon' type='ios-aperture' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-aperture' size='22' slot='icon-off' />
-            </wux-tabbar-item>
+            </wux-tabbar-item> */}
             <wux-tabbar-item key='tab4' title='关于我'>
                 <wux-icon wux-class='icon' type='ios-person' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-person' size='22' slot='icon-off' />

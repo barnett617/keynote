@@ -63,11 +63,34 @@ class Index extends Component {
     console.log('nextProps: ' + nextProps);
   }
 
-  componentWillUnmount () { }
+  showLoad() {
+    Taro.showNavigationBarLoading();
+  }
 
-  componentDidShow () { }
+  hideLoad() {
+    Taro.hideNavigationBarLoading();
+  }
 
-  componentDidHide () { }
+  ajax() {
+    this.showLoad();
+    Taro.request({
+      url: 'https://www.frontend.wang/search',
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }).then(res => {
+      console.log(res)
+      this.hideLoad()
+    }, err => {
+      console.log(err)
+      this.hideLoad()
+    })
+  }
+
+  click() {
+    this.ajax()
+  }
 
   render () {
     return (
@@ -89,6 +112,7 @@ class Index extends Component {
               <wux-cell title='我的城市' extra={this.state.userinfo.city ? this.state.userinfo.city : ''}></wux-cell>
               <wux-cell title='使用语言' extra={langEnum[this.state.userinfo.language]}></wux-cell>
               <wux-cell title='授权设置' is-link open-type='openSetting' ongetopensetting={this.onGotOpenSetting.bind(this)}></wux-cell>
+              <wux-cell title='调用接口' is-link onclick={this.click.bind(this)}></wux-cell>
             </wux-cell-group>
           </View>
         </View>

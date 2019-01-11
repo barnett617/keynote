@@ -133,7 +133,7 @@
 .modal {
   position: absolute;
   border-radius: 10px;
-  z-index: 20;
+  z-index: 1600;
   background-color: #fff;
   top: 30%;
   left: 50%;
@@ -161,6 +161,13 @@
     height: 100px;
     line-height: 100px;
     border-top: 1px solid rgb(187, 187, 187);
+  }
+  &-textarea {
+    padding: 40rpx;
+    &-btn {
+      width:90%;
+      margin:auto;
+    }
   }
 }
 .hide {
