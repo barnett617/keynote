@@ -656,6 +656,10 @@ class Home extends Component {
   playVideo() {
     const videoContext = Taro.createVideoContext('video')
     videoContext.play()
+    videoContext.sendDanmu({
+      text: '啦啦啦啦啦啦',
+      color: 'red'
+    })
   }
 
   showSearch() {
@@ -856,15 +860,15 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.3.9】
+              更新公告【版本1.4.0】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【简化】简化菜单，合并重排
+                【实验功能】聊天室
               </View>
-              <View className='modal-content-text'>
+              {/* <View className='modal-content-text'>
                 【优化】单独提供多行输入
-              </View>
+              </View> */}
             </View>
             <View onClick={this.hideNotice} className='modal-btn'>
               好的

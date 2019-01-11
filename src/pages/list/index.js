@@ -95,7 +95,7 @@ class Index extends Component {
       })
     } else if (e.target.key === 'tab3') {
       Taro.navigateTo({
-        url: '/pages/long/index'
+        url: '/pages/chat/index'
       })
     } else if (e.target.key === 'tab4') {
       Taro.navigateTo({
@@ -132,10 +132,10 @@ class Index extends Component {
                 <wux-icon wux-class='icon' type='ios-ice-cream' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-ice-cream' size='22' slot='icon-off' />
             </wux-tabbar-item>
-            {/* <wux-tabbar-item key='tab3' title='小啰嗦'>
+            <wux-tabbar-item key='tab3' title='聊天室'>
                 <wux-icon wux-class='icon' type='ios-aperture' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-aperture' size='22' slot='icon-off' />
-            </wux-tabbar-item> */}
+            </wux-tabbar-item>
             <wux-tabbar-item key='tab4' title='关于我'>
                 <wux-icon wux-class='icon' type='ios-person' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-person' size='22' slot='icon-off' />
