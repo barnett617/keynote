@@ -166,26 +166,26 @@ class Index extends Component {
       return (
         each.openid === this.state.openid
         ?
-        <View key={index} className='page-list-item-wrap right'>
+        <View key={index} className='page-list-item-wrap-me'>
           <View className='page-list-item-view-time'>
             <Text>{each.time}</Text>
           </View>
-          <View className='page-list-item-view-wrap'>
+          <View className='page-list-item-view-wrap-me'>
             <View className='page-list-item-view-text-me' key={index}>
               <Text>{each.content}</Text>
             </View>
-            <View className='page-list-item-view-wrap-avatar-me'>
+            <View className='page-list-item-view-wrap-me-avatar'>
               <Image src={this.state.avatar} data-src={this.state.avatar}></Image>
             </View>
           </View>
         </View>
         :
-        <View key={index} className='page-list-item-wrap left'>
+        <View key={index} className='page-list-item-wrap-other'>
           <View className='page-list-item-view-time'>
             <Text>{each.time}</Text>
           </View>
-          <View className='page-list-item-view-wrap'>
-            <View className='page-list-item-view-wrap-avatar-other'>
+          <View className='page-list-item-view-wrap-other'>
+            <View className='page-list-item-view-wrap-other-avatar'>
               <Image src={this.state.avatar} data-src={this.state.avatar}></Image>
             </View>
             <View className='page-list-item-view-text-other' key={index}>
