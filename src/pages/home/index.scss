@@ -135,9 +135,9 @@
   border-radius: 10px;
   z-index: 1600;
   background-color: #fff;
-  top: 30%;
+  top: 50%;
   left: 50%;
-  transform: translate(-50%);
+  transform: translate(-50%, -50%);
   width: 600px;
   // height: 474px;
   &-title {
@@ -164,6 +164,8 @@
   }
   &-textarea {
     padding: 40rpx;
+    max-height:400rpx;
+    overflow-y:scroll;
     &-btn {
       width:90%;
       margin:auto;

@@ -690,6 +690,7 @@ class Home extends Component {
     //     },
     // })
     this.setState({
+      popupShow: false,
       showMultiText: 'modal'
     })
   }
@@ -860,11 +861,11 @@ class Home extends Component {
           </View>
           <View className={this.state.modal}>
             <View className='modal-title'>
-              更新公告【版本1.4.0】
+              更新公告【版本1.4.1】
             </View>
             <View className='modal-content'>
               <View className='modal-content-text'>
-                【实验功能】聊天室
+                【升级】多行输入不限字数
               </View>
               {/* <View className='modal-content-text'>
                 【优化】单独提供多行输入
@@ -883,6 +884,7 @@ class Home extends Component {
                 placeholder='这里可以输入多行文本呦~'
                 rows={this.state.textareaRows}
                 hasCount
+                maxlength={5000}
                 clear
                 autoHeight
                 adjust-position
