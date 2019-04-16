@@ -218,7 +218,8 @@ class Home extends Component {
     Taro.showNavigationBarLoading();
     // 这里的接口需要在备案域名机器下，并且配置app开发
     Taro.request({
-      url: 'https://www.frontend.wang',
+      url: 'https://www.trigolds.com',
+      // url: 'https://www.frontend.wang',
       // url: 'http://101.132.174.1:8082/analysis/',
       method: 'POST',
       data: {
