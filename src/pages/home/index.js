@@ -847,7 +847,7 @@ class Home extends Component {
                     value={this.state.content} 
                     controlled 
                     type='text' 
-                    confirm-type='发送'
+                    confirm-type='send'
                     confirmHold
                     onchange={this.handelChange.bind(this)}
                     onconfirm={this.handleCommit.bind(this)}

@@ -1,14 +1,15 @@
-import Taro, { Component } from '@tarojs/taro'
-import { View, Text, ScrollView, OpenData, Image } from '@tarojs/components'
-import io from 'weapp.socket.io'
+import Taro, { Component } from '@tarojs/taro';
+import { View, Text, ScrollView, Image } from '@tarojs/components';
+import io from 'weapp.socket.io';
 import dateFormat from '../../utils/dateFormat';
-import { $wuxDialog } from '../../lib/index'
-
-import './index.scss'
+import { $wuxDialog } from '../../lib/index';
+import './index.scss';
 
 let socket;
+let openIdList = []
+let userAvatarList = []
 
-class Index extends Component {
+class Chat extends Component {
 
   config = {
     navigationBarTitleText: '聊天室',
@@ -23,11 +24,16 @@ class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      content: '',
+      // 聊天内容
+      message: '',
+      // 消息列表
       msgList: [],
       scrollTop: 0,
-      avatar: '',
-      openid: ''
+      // 当前用户信息（三要素）
+      userId: null,
+      userNick: null,
+      userAvatar: null,
+      openIdList: []
     }
   }
 
@@ -35,9 +41,9 @@ class Index extends Component {
     this.handleLogin();
     const userinfo = Taro.getStorageSync('userinfo');
     this.setState({
-      avatar: userinfo.avatarUrl
+      userNick: userinfo.nickName,
+      userAvatar: userinfo.avatarUrl,
     })
-    this.socket(userinfo.nickName)
   }
 
   /**
@@ -48,97 +54,160 @@ class Index extends Component {
     const self = this;
     Taro.BaaS.login(false).then(res => {
       self.setState({
-        openid: res.openid
-      });
+        userId: res.openid
+      }, this.socket(res.openid));
     }, err => {
       // 登录失败
-      console.log('err: ' + err);
+      // console.log('err: ' + err);
     })
   }
 
-  socket(nickName) {
-    socket = io('https://www.frontend.wang/', {
-      // 实际使用中可以在这里传递参数
-      query: {
-        room: 'demo',
-        // userId: `client_wangxin`,
-        userId: `client_${Math.random()}`,
-      },
-      transports: ['websocket']
-    });
-
-    socket.on('connect', () => {
-      const id = socket.id;
-      console.log('#connect,', id, socket);
-      // 监听自身 id 以实现 p2p 通讯
-      socket.on(id, msg => {
-        console.log('#receive,', msg);
-      });
-    });
-
-    // 接收在线用户信息
-    socket.on('online', msg => {
-      console.log('#online,', msg);
-    });
-
-    // 系统事件
-    socket.on('disconnect', msg => {
-      console.log('#disconnect', msg);
-    });
-
-    socket.on('disconnecting', () => {
-      console.log('#disconnecting');
-    });
-
-    socket.on('error', (e) => {
-      console.log('#error' + e);
-    });
-
-    // 监听其他用户进入聊天室
-    socket.on('usercome', (e) => {
-      const loginTime = dateFormat.timestamp(e.meta.timestamp)
-      const username = e.data.payload.msg;
-      this.userLogin(username, loginTime)
-    });
-
-    // 监听消息
-    socket.on('chat', (e) => {
-      const msg = {
-        time: dateFormat.timestamp(e.meta.timestamp),
-        content: e.data.payload.msg,
-        avatar: e.data.payload.avatar,
-        openid: e.data.payload.openid
+  componentDidMount () {
+    const self = this;
+    socket.on('receiveMessage', function (msg) {
+      let newList;
+      let showTime = true;
+      if (self.state.msgList && self.state.msgList.length > 0) {
+        showTime = dateFormat.gapfivemin(self.state.msgList[self.state.msgList.length - 1].originTime, msg.time)
       }
-      this.setState({
-        msgList: this.state.msgList.concat(msg)
+      let time;
+      if (showTime) {
+        time = dateFormat.timestamp(msg.time)
+      } else {
+        time = null
+      }
+      if (msg.userType === 'sys') {
+        newList = self.state.msgList.concat({
+          userType: 'sys',
+          message: msg.message,
+          originTime: msg.time,
+          time: time,
+        })
+      } else {
+        newList = self.state.msgList.concat({
+          userId: msg.userId,
+          userNick: msg.userNick,
+          userAvatar: msg.userAvatar,
+          message: msg.message,
+          originTime: msg.time,
+          time: time,
+        })
+      }
+      self.setState({
+        msgList: newList,
+        scrollTop: 1000 * (newList.length + 1),
       })
-    });
+    })
 
-    // 连接socket通知环境内其他用户
-    socket.emit('exchange', {
-      // client: 'nNx88r1c5WuHf9XuAAAB',
-      target: 'login',
-      payload: {
-        msg : nickName,
-      },
-    });
+    /*登录成功*/
+    socket.on('loginSuccess', function (user) {
+      if (user.userId) {
+        // 登录成功
+        // let existUser = true
+        // if (self.state.openIdList && self.state.openIdList.length > 0) {
+        //   self.state.openIdList.forEach(element => {
+        //     if (element === user.userId) {
+        //       existUser = true;
+        //       return false
+        //     }
+        //   });
+        // } else {
+        //   existUser = false
+        // }
+        // if (!existUser) {
+        //   self.setState({
+        //     openIdList: self.state.openIdList.concat(user.userId)
+        //   })
+        // }
+      } else {
+      }
+    })
 
+    /*新人加入提示*/
+    socket.on('newJoin', function (user) {
+      let existUser = true
+      if (openIdList && openIdList.length > 0) {
+        openIdList.forEach(element => {
+          if (element === user.userId) {
+            existUser = true;
+            return false
+          }
+        });
+      } else {
+        existUser = false
+        openIdList.push(user.userId);
+        userAvatarList.push(user.userAvatar);
+      }
+      if (user && user.userNick && !existUser) {
+        socket.emit('sendMessage', {
+          userType: 'sys',
+          message: user.userNick + '加入群聊',
+          time: new Date()
+        });
+      }
+    })
   }
 
-  userLogin(name, time) {
-    $wuxDialog().alert({
-      resetOnClose: true,
-      title: time,
-      content: name + '进入了房间',
+  componentWillUnmount() {
+    // const self = this;
+    // socket.emit('logout', {
+    //   userId: self.state.userId,
+    //   userNick: self.state.userNick
+    // })
+  }
+  
+  socket(openid) {
+    socket = io('wss://im.trigolds.com');
+    // 连接socket后使用当前openid登录聊天室
+    socket.emit('login',{
+      userId: openid,
+      userNick: this.state.userNick,
+      userAvatar: this.state.userAvatar,
+    })
+
+    
+
+    /*登录失败*/
+    socket.on('loginFail', function () {
+      $wuxDialog().alert({
+        resetOnClose: true,
+        content: '您已在其他设备登录',
+      })
+    })
+
+    /*退出群聊提示*/
+    socket.on('leave',function (userNick) {
+      if (userNick != null) {
+        // $wuxDialog().alert({
+        //   resetOnClose: true,
+        //   content: userNick + '退出群聊',
+        // })
+        socket.emit('sendMessage', {
+          userType: 'sys',
+          message: user.userNick + '退出群聊',
+          time: new Date()
+        });
+      }
     })
   }
 
   onScrolltoupper(e) {
-    console.log(e)
+    // console.log(e)
   }
 
   onScroll(e) {
-    console.log(e)
+    // console.log(e)
+  }
+
+  /**
+   * 监听输入框输入
+   */
+  handelChange = (e) => {
+    if (e.target.value) {
+      this.setState({
+        message: e.target.value,
+      });
+    }
   }
 
   /**
@@ -147,56 +216,89 @@ class Index extends Component {
    */
   handleCommit(e) {
     this.setState({
-      content: ''
+      message: '',
+      scrollTop: 1000 * (this.state.msgList.length + 1),
     })
-    socket.emit('exchange', {
-      // client: 'nNx88r1c5WuHf9XuAAAB',
-      target: 'chat',
-      payload: {
-        msg : e.target.value,
-        avatar: this.state.avatar,
-        openid: this.state.openid
-      },
+    socket.emit('sendMessage', {
+      userId: this.state.userId,
+      userNick: this.state.userNick,
+      userAvatar: this.state.userAvatar,
+      message: e.target.value,
+      time: new Date()
     });
   }
 
   render () {
     const msgList = this.state.msgList;
+    const avatarDomList = userAvatarList.map((each, index) => {
+      return (
+        <Image key={index} src={each} data-src={each}></Image>
+      )
+    })
     const msgListDom = msgList.map((each, index) => {
       return (
-        each.openid === this.state.openid
+        each.userType ==='sys'
         ?
-        <View key={index} className='page-list-item-wrap-me'>
+        <View className='page-list-item-wrap-sys' key={index}>
           <View className='page-list-item-view-time'>
             <Text>{each.time}</Text>
           </View>
-          <View className='page-list-item-view-wrap-me'>
-            <View className='page-list-item-view-text-me' key={index}>
-              <Text>{each.content}</Text>
-            </View>
-            <View className='page-list-item-view-wrap-me-avatar'>
-              <Image src={this.state.avatar} data-src={this.state.avatar}></Image>
-            </View>
+          <View className='page-list-item-view-text-sys'>
+            <Text>{each.message}</Text>
           </View>
         </View>
         :
-        <View key={index} className='page-list-item-wrap-other'>
-          <View className='page-list-item-view-time'>
-            <Text>{each.time}</Text>
-          </View>
-          <View className='page-list-item-view-wrap-other'>
-            <View className='page-list-item-view-wrap-other-avatar'>
-              <Image src={this.state.avatar} data-src={this.state.avatar}></Image>
+        (  
+          each.userId === this.state.userId
+          ?
+          <View key={index} className='page-list-item-wrap-me'>
+            {
+              each.time !== null
+              ?
+              <View className='page-list-item-view-time'>
+                <Text>{each.time}</Text>
+              </View>
+              :
+              <View></View>
+            }
+            <View className='page-list-item-view-wrap-me' key={index}>
+              <View className='page-list-item-view-text-me'>
+                <Text>{each.message}</Text>
+              </View>
+              <View className='page-list-item-view-wrap-me-avatar'>
+                <Image src={each.userAvatar} data-src={each.userAvatar}></Image>
+              </View>
             </View>
-            <View className='page-list-item-view-text-other' key={index}>
-              <Text>{each.content}</Text>
+          </View>
+          :
+          <View key={index} className='page-list-item-wrap-other'>
+            {
+              each.time !== null
+              ?
+              <View className='page-list-item-view-time'>
+                <Text>{each.time}</Text>
+              </View>
+              :
+              <View></View>
+            }
+            <View className='page-list-item-view-wrap-other' key={index}>
+              <View className='page-list-item-view-wrap-other-avatar'>
+                <Image src={each.userAvatar} data-src={each.userAvatar}></Image>
+              </View>
+              <View className='page-list-item-view-text-other'>
+                <Text>{each.message}</Text>
+              </View>
             </View>
           </View>
-        </View>
+        )
       )
     })
     return (
       <View className='page'>
+        <View className='page-avatar-list'>
+          <Text>当前在线用户：</Text>
+          { avatarDomList }
+        </View>
         <ScrollView
           className='page-scrollview'
           scrollY
@@ -213,12 +315,12 @@ class Index extends Component {
           <View className='page-input-box'>
             <wux-cell hover-class='none'>
               <wux-input 
-                value={this.state.content} 
+                value={this.state.message} 
                 controlled 
                 type='text' 
-                confirm-type='发送'
+                confirm-type='send'
                 confirmHold
-                // onchange={this.handelChange.bind(this)}
+                onchange={this.handelChange.bind(this)}
                 onconfirm={this.handleCommit.bind(this)}
               />
             </wux-cell>
@@ -229,5 +331,4 @@ class Index extends Component {
     )
   }
 }
-
-export default Index
+export default Chat

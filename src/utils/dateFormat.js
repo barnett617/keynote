@@ -35,9 +35,10 @@ function timestamp (dateStr) {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const nowYear = new Date().getFullYear();
-  const nowMonth = new Date().getMonth() + 1;
-  const nowDay = new Date().getDate();
+  const current = new Date();
+  const nowYear = current.getFullYear();
+  const nowMonth = current.getMonth() + 1;
+  const nowDay = current.getDate();
   let hour = date.getHours().toString();
   if (hour && hour.length === 1) {
     hour = '0' + hour;
@@ -62,7 +63,16 @@ function timestamp (dateStr) {
   return timeStr
 } 
 
+function gapfivemin (last, now) {
+  const gap = now.valueOf() - last.valueOf();
+  if (gap > 5 * 60 * 1000) {
+    return true
+  }
+  return false
+}
+
 export default {
   common: common,
-  timestamp: timestamp
+  timestamp: timestamp,
+  gapfivemin: gapfivemin,
 };
