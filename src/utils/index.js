@@ -1,22 +1,6 @@
 import Taro from '@tarojs/taro'
-import { getGlobalData } from '../constants/globalData'
 
 const appid = 'wx1849501120de4702'
-
-async function getUserInfo () {
-  const userData = getGlobalData('userData')
-  if (userData) {
-    return userData
-  }
-  try {
-    const userData = await Taro.getUserInfo()
-    return userData
-  } catch (err) {
-    console.log(err)
-    console.log('微信登录或用户接口故障')
-    return null
-  }
-}
 
 async function getOpenId () {
   let openId = Taro.getStorageSync('taro_demo_openid')

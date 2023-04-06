@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro';
+import Taro from '@tarojs/taro';
+import React, { Component } from 'react'
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import io from 'weapp.socket.io';
 import dateFormat from '../../utils/dateFormat';
@@ -10,16 +11,6 @@ let openIdList = []
 let userAvatarList = []
 
 class Chat extends Component {
-
-  config = {
-    navigationBarTitleText: '聊天室',
-    "usingComponents": {
-      "wux-cell-group": "../../lib/cell-group/index",
-      "wux-cell": "../../lib/cell/index",
-      "wux-dialog": "../../lib/dialog/index",
-      'wux-input': '../../lib/input/index',
-    }
-  }
 
   constructor(props) {
     super(props)
@@ -37,7 +28,7 @@ class Chat extends Component {
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this.handleLogin();
     const userinfo = Taro.getStorageSync('userinfo');
     this.setState({
@@ -155,7 +146,7 @@ class Chat extends Component {
     //   userNick: self.state.userNick
     // })
   }
-  
+
   socket(openid) {
     socket = io('wss://im.trigolds.com');
     // 连接socket后使用当前openid登录聊天室
@@ -165,7 +156,7 @@ class Chat extends Component {
       userAvatar: this.state.userAvatar,
     })
 
-    
+
 
     /*登录失败*/
     socket.on('loginFail', function () {
@@ -178,10 +169,6 @@ class Chat extends Component {
     /*退出群聊提示*/
     socket.on('leave',function (userNick) {
       if (userNick != null) {
-        // $wuxDialog().alert({
-        //   resetOnClose: true,
-        //   content: userNick + '退出群聊',
-        // })
         socket.emit('sendMessage', {
           userType: 'sys',
           message: user.userNick + '退出群聊',
@@ -212,7 +199,7 @@ class Chat extends Component {
 
   /**
    * 发消息
-   * @param {*} e 
+   * @param {*} e
    */
   handleCommit(e) {
     this.setState({
@@ -248,7 +235,7 @@ class Chat extends Component {
           </View>
         </View>
         :
-        (  
+        (
           each.userId === this.state.userId
           ?
           <View key={index} className='page-list-item-wrap-me'>
@@ -314,10 +301,10 @@ class Chat extends Component {
         <View className='page-input'>
           <View className='page-input-box'>
             <wux-cell hover-class='none'>
-              <wux-input 
-                value={this.state.message} 
-                controlled 
-                type='text' 
+              <wux-input
+                value={this.state.message}
+                controlled
+                type='text'
                 confirm-type='send'
                 confirmHold
                 onchange={this.handelChange.bind(this)}

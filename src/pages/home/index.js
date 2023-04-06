@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, ScrollView, Text, Image, OpenData, Video, Textarea } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
 import './index.scss'
@@ -8,45 +9,10 @@ import mic from '../../assets/images/_ionicons_svg_ios-mic.svg';
 import pic from '../../assets/images/_ionicons_svg_md-images.svg';
 import edit from '../../assets/images/_ionicons_svg_ios-create.svg';
 import film from '../../assets/images/_ionicons_svg_ios-film.svg';
-import { $wuxDialog } from '../../lib/index'
 
 let recorderManager;
 
 class Home extends Component {
-
-  config = {
-    navigationBarTitleText: 'PickMee',
-    'usingComponents': {
-      'wux-icon': '../../lib/icon/index',
-      'wux-notice-bar': '../../lib/notice-bar/index',
-      'wux-spin': '../../lib/spin/index',
-      'wux-button': '../../lib/button/index',
-      'wux-card': '../../lib/card/index',
-      'wux-wing-blank': '../../lib/wing-blank/index',
-      // tab
-      'wux-icon': '../../lib/icon/index',
-      'wux-badge': '../../lib/badge/index',
-      'wux-tabbar': '../../lib/tabbar/index',
-      'wux-tabbar-item': '../../lib/tabbar-item/index',
-      //
-      'wux-fab-button': '../../lib/fab-button/index',
-      // input
-      'wux-cell-group': '../../lib/cell-group/index',
-      'wux-cell': '../../lib/cell/index',
-      'wux-input': '../../lib/input/index',
-      // popup
-      'wux-button': '../../lib/button/index',
-      'wux-popup': '../../lib/popup/index',
-      // grid
-      'wux-icon': '../../lib/icon/index',
-      'wux-grids': '../../lib/grids/index',
-      'wux-grid': '../../lib/grid/index',
-      'wux-search-bar': '../../lib/search-bar/index',
-      "wux-prompt": "../../lib/prompt/index",
-      "wux-dialog": "../../lib/dialog/index",
-      "wux-textarea": "../../lib/textarea/index"
-    }
-  }
 
   constructor(props) {
     super(props)
@@ -79,13 +45,13 @@ class Home extends Component {
       searchValue: '',
       showSearch: 'hide',
       scrollSearch: true,
-      // 光标与键盘的距离，单位 px 
+      // 光标与键盘的距离，单位 px
       cursorSpacing: 80,
       textareaRows: 3,
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this.handleLogin();
   }
 
@@ -95,7 +61,7 @@ class Home extends Component {
    */
   handleLogin () {
     const self = this;
-    Taro.showNavigationBarLoading();  
+    Taro.showNavigationBarLoading();
     Taro.BaaS.login(false).then(res => {
       this.handleList(res.openid)
       self.setState({
@@ -132,7 +98,7 @@ class Home extends Component {
     query.compare('userUniformId', '=', id);
     this.showLoad()
     TableObj.setQuery(query).limit(this.state.pageSize).offset(this.state.currentPage).orderBy('-created_at').find().then(res => {
-      this.hideLoad() 
+      this.hideLoad()
       if (res.statusCode === 200) {
         const data = res.data.objects
         // 查询的最后十条倒序排正
@@ -161,7 +127,7 @@ class Home extends Component {
       })
     })
   }
-  
+
   /**
    * 提交输入文本
    */
@@ -269,8 +235,8 @@ class Home extends Component {
   onScrolltoupper = (e) => {
     console.log(e)
     if (this.state.scrollSearch) {
-      Taro.showNavigationBarLoading();  
-      this.handleList();  
+      Taro.showNavigationBarLoading();
+      this.handleList();
     }
   }
 
@@ -670,26 +636,6 @@ class Home extends Component {
   }
 
   multiText() {
-    // const alert = (content) => {
-    //   $wuxDialog('#wux-dialog--alert').alert({
-    //       resetOnClose: true,
-    //       title: '提示',
-    //       content: content,
-    //   })
-    // }
-    // $wuxDialog().prompt({
-    //     resetOnClose: true,
-    //     title: '多行输入',
-    //     // content: '密码为8位数字',
-    //     fieldtype: 'text',
-    //     defaultText: '',
-    //     // placeholder: '请输入Wi-Fi密码',
-    //     maxlength: 140,
-    //     onConfirm(e, response) {
-    //         const content = response
-    //         // alert(content)
-    //     },
-    // })
     this.setState({
       popupShow: false,
       showMultiText: 'modal'
@@ -735,10 +681,10 @@ class Home extends Component {
               <OpenData type='userAvatarUrl' />
             </View>
             <View className='home-list-item-view-image' key={index}>
-              <Image 
+              <Image
                 onClick={this.previewImage}
                 // 宽度不变，高度自动变化，保持原图宽高比不变
-                mode='widthFix' 
+                mode='widthFix'
                 data-src={item.content}
                 src={item.content}
               ></Image>
@@ -810,16 +756,16 @@ class Home extends Component {
             ?
             <View>
               <View className={this.state.showSearch}>
-                <wux-search-bar 
-                  clear 
-                  show-cancel 
+                <wux-search-bar
+                  clear
+                  show-cancel
                   value={this.state.searchValue}
-                  controlled 
-                  placeholder='搜索' 
+                  controlled
+                  placeholder='搜索'
                   onchange={this.searchChange.bind(this)}
                   onfocus={this.searchFocus.bind(this)}
-                  onblur={this.searchBlue.bind(this)} 
-                  onconfirm={this.searchConfirm.bind(this)} 
+                  onblur={this.searchBlue.bind(this)}
+                  onconfirm={this.searchConfirm.bind(this)}
                   onclear={this.searchClear.bind(this)}
                   oncancel={this.searchCancel.bind(this)}
                 />
@@ -843,10 +789,10 @@ class Home extends Component {
           <View id='home-input' className='home-input'>
               <View className='home-input-box'>
                 <wux-cell hover-class='none'>
-                  <wux-input 
-                    value={this.state.content} 
-                    controlled 
-                    type='text' 
+                  <wux-input
+                    value={this.state.content}
+                    controlled
+                    type='text'
                     confirm-type='send'
                     confirmHold
                     onchange={this.handelChange.bind(this)}
@@ -879,7 +825,7 @@ class Home extends Component {
           <View className={this.state.showMultiText}>
             <View className='modal-textarea'>
               <wux-textarea
-                onchange={this.handelChange.bind(this)} 
+                onchange={this.handelChange.bind(this)}
                 cursorSpacing={this.state.textareaRows}
                 value={this.state.content}
                 placeholder='这里可以输入多行文本呦~'
@@ -895,13 +841,13 @@ class Home extends Component {
               <wux-button onclick={this.commitLong.bind(this)} block type='positive'>发送</wux-button>
             </View>
           </View>
-          <wux-fab-button 
+          <wux-fab-button
             position={this.state.types[this.state.typeIndex]}
             theme={this.state.colors[this.state.colorIndex]}
             direction={this.state.dirs[this.state.dirIndex]}
-            reverse={this.state.reverse} 
+            reverse={this.state.reverse}
             spaceBetween={this.state.spaceBetween}
-            sAngle={this.state.sAngle} 
+            sAngle={this.state.sAngle}
             eAngle={this.state.eAngle}
             buttons={buttons}
             onchange={this.changeFab.bind(this)}

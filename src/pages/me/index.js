@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Text } from '@tarojs/components'
 import './index.scss'
 
@@ -10,14 +11,6 @@ const langEnum = {
 
 class Index extends Component {
 
-  config = {
-    navigationBarTitleText: '',
-    "usingComponents": {
-      "wux-cell-group": "../../lib/cell-group/index",
-      "wux-cell": "../../lib/cell/index"
-    }
-  }
-
   constructor(props) {
     super(props)
     this.state = {
@@ -25,7 +18,7 @@ class Index extends Component {
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     const userinfo = Taro.getStorageSync('userinfo');
     this.setState({
       userinfo: userinfo
@@ -56,11 +49,6 @@ class Index extends Component {
   }
 
   onGotOpenSetting(e) {
-  }
-
-  componentWillReceiveProps (nextProps) {
-    console.log('this.props: ' + this.props);
-    console.log('nextProps: ' + nextProps);
   }
 
   showLoad() {
