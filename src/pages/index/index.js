@@ -1,30 +1,21 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Button } from '@tarojs/components'
 import StartImg from '../../assets/images/min.jpeg'
 
 import './index.scss'
 
 class Index extends Component {
-  
+
   constructor (props) {
     super(props)
     this.state = {
       canIUse: Taro.canIUse('Button.openType.getUserInfo'),
     }
-    this.env = process.env.TARO_ENV
-  }
-
-  config = {
-    navigationBarTitleText: '',
-    "usingComponents": {
-      "wux-icon": "../../lib/icon/index",
-      "wux-button": "../../lib/button/index"
-    },
-    disableScroll: true
   }
 
   // 对应微信onLoad方法
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     Taro.setNavigationBarColor({
       frontColor: '#000000',
       backgroundColor: '#FCFCFC',
@@ -52,9 +43,9 @@ class Index extends Component {
         <View className='page-img'>
           <Image src={StartImg} data-src={StartImg}></Image>
         </View>
-        <Button 
+        <Button
           className='btn'
-          block 
+          block
           type='royal'
           Taro-if={this.state.canIUse}
           openType='getUserInfo'

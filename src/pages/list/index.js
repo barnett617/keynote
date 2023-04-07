@@ -1,9 +1,12 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View } from '@tarojs/components'
 import dateFormat from '../../utils/dateFormat';
 import './index.scss'
+import { AtTimeline } from 'taro-ui';
 
 class Index extends Component {
+
   constructor (props) {
     super(props)
     this.state = {
@@ -11,40 +14,26 @@ class Index extends Component {
       pageSize: 50,
       currentPage: 0,
       openId: '',
-      currentTab: 'tab1'
+      currentTab: '0'
     }
-    this.env = process.env.TARO_ENV
-  }
-  config = {
-    navigationBarTitleText: '时间轴',
-    "usingComponents": {
-      "wux-cell-group": "../../lib/cell-group/index",
-      "wux-cell": "../../lib/cell/index",
-      "wux-icon": "../../lib/icon/index",
-      "wux-timeline": "../../lib/timeline/index",
-      "wux-timeline-item": "../../lib/timeline-item/index",
-      // tab
-      'wux-icon': '../../lib/icon/index',
-      'wux-badge': '../../lib/badge/index',
-      'wux-tabbar': '../../lib/tabbar/index',
-      'wux-tabbar-item': '../../lib/tabbar-item/index',
-      "wux-prompt": "../../lib/prompt/index"
-    },
+    this.changeTab = this.changeTab.bind(this);
   }
 
+
+
   // 对应微信onLoad方法
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this.login()
   }
 
   componentDidMount () {
     this.setState({
-      currentTab: 'tab1'
+      currentTab: '0'
     })
   }
 
   login () {
-    Taro.showNavigationBarLoading();  
+    Taro.showNavigationBarLoading();
     Taro.BaaS.login(false).then(res => {
       this.getData(res.openid)
       this.setState({
@@ -68,7 +57,7 @@ class Index extends Component {
     var query = new Taro.BaaS.Query()
     query.compare('userUniformId', '=', id);
     TableObj.setQuery(query).limit(this.state.pageSize).offset(this.state.currentPage).orderBy('-created_at').find().then(res => {
-      Taro.hideNavigationBarLoading();  
+      Taro.hideNavigationBarLoading();
       if (res.statusCode === 200) {
         const data = res.data.objects
         this.setState({
@@ -86,21 +75,20 @@ class Index extends Component {
   }
 
   changeTab(e) {
+    const value = e.detail.key;
     this.setState({
-      currentTab: e.detail.key,
+      currentTab: value,
     })
-    if (e.target.key === 'tab2') {
+    const map = {
+      1: "/pages/home/index",
+      2: "/pages/chat/index",
+      3: "/pages/me/index"
+    }
+    const url = map[value];
+    if (url) {
       Taro.navigateTo({
-        url: '/pages/home/index'
-      })
-    } else if (e.target.key === 'tab3') {
-      Taro.navigateTo({
-        url: '/pages/chat/index'
-      })
-    } else if (e.target.key === 'tab4') {
-      Taro.navigateTo({
-        url: '/pages/me/index'
-      })
+        url: url
+      });
     }
   }
 
@@ -123,7 +111,7 @@ class Index extends Component {
         }
         </View>
         <View className='page-tab'>
-          <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab.bind(this)}>
+          <wux-tabbar controlled current={this.state.currentTab} onchange={this.changeTab}>
             <wux-tabbar-item key='tab1' title='时间轴'>
                 <wux-icon wux-class='icon' type='ios-alarm' size='22' slot='icon-on' />
                 <wux-icon wux-class='icon' type='ios-alarm' size='22' slot='icon-off' />
